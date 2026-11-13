@@ -1,6 +1,7 @@
 // src/context/ThemeContext.js
 import React, { createContext, useState, useContext, useEffect } from 'react';
 import { Platform, UIManager, LayoutAnimation } from 'react-native';
+import { useAccessibility } from '../accessibility/AccessibilityContext';
 
 // Ativa o LayoutAnimation no Android (necessário para versões antigas)
 if (
@@ -42,9 +43,25 @@ export const darkTheme = {
   backgroundColor: '#ce3d11'
 };
 
+export const highContrastTheme = {
+  sidebarBg: '#FFFFFF',
+  mainBg: '#FFFFFF',
+  headerBg: '#FFFFFF',
+  cardBg: '#FFFFFF',
+  textPrimary: '#000000',
+  textSecondary: '#1F2937',
+  accent: '#003B73',
+  searchBg: '#FFFFFF',
+  borderColor: '#000000',
+  menuActiveBg: '#E6F0FF',
+  sendBtnBg: '#003B73',
+  backgroundColor: '#003B73',
+};
+
 const ThemeContext = createContext();
 
 export const ThemeProvider = ({ children }) => {
+  const { highContrast } = useAccessibility();
   // Começa no modo claro (true) ou escuro (false)
   const [isLightMode, setIsLightMode] = useState(true); 
 
@@ -69,7 +86,7 @@ export const ThemeProvider = ({ children }) => {
   };
   
   // Variável que guarda o pacote de cores atual
-  const theme = isLightMode ? lightTheme : darkTheme;
+  const theme = highContrast ? highContrastTheme : (isLightMode ? lightTheme : darkTheme);
 
   // Injeta uma transição CSS global na Web para que a troca de cores seja suave no navegador
   useEffect(() => {

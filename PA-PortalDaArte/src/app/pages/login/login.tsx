@@ -1,15 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
-import {
-  KeyboardAvoidingView,
-  Platform,
-  SafeAreaView,
-  StyleSheet,
-  Text,
-  TextInput,
-  type TextInputProps,
-  TouchableOpacity,
-  View,
-} from "react-native";
+import { KeyboardAvoidingView, Platform, SafeAreaView, StyleSheet, type TextInputProps, TouchableOpacity, View } from 'react-native';
+import { AccessibleTextInput as TextInput } from '../../../components/accessibility/AccessibleTextInput';
 import { router, useLocalSearchParams, useNavigationContainerRef } from "expo-router";
 import Head from "expo-router/head";
 import { ArrowLeft, Lock, Mail } from "lucide-react-native";
@@ -17,6 +8,7 @@ import { salvarLogin } from "../../services/auth";
 import { refreshSession } from "../../../components/context/AuthContext";
 import { buildRegisterHref, DISCOVER_ROUTE, sanitizeRedirect } from "../../../constants/auth-routes";
 
+import { VLibrasText as Text } from '../../../components/accessibility/VLibrasText';
 const URL_API = process.env.EXPO_PUBLIC_API_URL || "http://127.0.0.1:8000";
 
 // Respostas de validação (422) podem trazer uma lista em detail, não um texto.
@@ -323,7 +315,8 @@ export default function LoginScreen() {
           <View style={styles.circleBottomRight} />
 
           <View style={styles.loginCard}>
-            <TouchableOpacity onPress={closeRecovery} disabled={isSubmittingRecovery} style={styles.backButton}>
+            <TouchableOpacity onPress={closeRecovery} disabled={isSubmittingRecovery} style={styles.backButton}
+              accessibilityRole="button">
               <ArrowLeft size={18} color="#E15743" />
               <Text style={styles.backText}>Voltar para o login</Text>
             </TouchableOpacity>
@@ -384,13 +377,15 @@ export default function LoginScreen() {
                 onPress={handleResetPassword}
                 disabled={isSubmittingRecovery}
                 accessibilityState={{ disabled: isSubmittingRecovery, busy: isSubmittingRecovery }}
+                accessibilityRole="button"
               >
                 <Text style={styles.loginButtonText}>
                   {isSubmittingRecovery ? "Salvando..." : "Redefinir senha"}
                 </Text>
               </TouchableOpacity>
             ) : (
-              <TouchableOpacity style={styles.secondaryButton} onPress={openRecovery}>
+              <TouchableOpacity style={styles.secondaryButton} onPress={openRecovery}
+                accessibilityRole="button">
                 <Text style={styles.secondaryButtonText}>Solicitar novo link</Text>
               </TouchableOpacity>
             )}
@@ -413,7 +408,8 @@ export default function LoginScreen() {
           <View style={styles.circleBottomRight} />
 
           <View style={styles.loginCard}>
-            <TouchableOpacity onPress={closeRecovery} disabled={isSubmittingRecovery} style={styles.backButton}>
+            <TouchableOpacity onPress={closeRecovery} disabled={isSubmittingRecovery} style={styles.backButton}
+              accessibilityRole="button">
               <ArrowLeft size={18} color="#E15743" />
               <Text style={styles.backText}>Voltar para o login</Text>
             </TouchableOpacity>
@@ -441,6 +437,7 @@ export default function LoginScreen() {
                 autoCapitalize="none"
                 autoCorrect={false}
                 style={styles.iconInput}
+                accessibilityLabel={"E-mail"}
               />
             </View>
 
@@ -456,6 +453,7 @@ export default function LoginScreen() {
                 onPress={handleRecovery}
                 disabled={isSubmittingRecovery}
                 accessibilityState={{ disabled: isSubmittingRecovery, busy: isSubmittingRecovery }}
+                accessibilityRole="button"
               >
                 <Text style={styles.loginButtonText}>
                   {isSubmittingRecovery ? "Enviando..." : "Enviar link de recuperação"}
@@ -467,6 +465,7 @@ export default function LoginScreen() {
               <TouchableOpacity
                 style={styles.secondaryButton}
                 onPress={closeRecovery}
+                accessibilityRole="button"
               >
                 <Text style={styles.secondaryButtonText}>
                   Voltar para entrar
@@ -510,6 +509,7 @@ export default function LoginScreen() {
             autoCapitalize="none"
             autoCorrect={false}
             style={styles.input}
+            accessibilityLabel={"E-mail"}
           />
 
           <Text style={styles.label}>Senha</Text>
@@ -527,6 +527,7 @@ export default function LoginScreen() {
               autoCapitalize="none"
               autoCorrect={false}
               style={styles.passwordInput}
+              accessibilityLabel={"Senha"}
             />
           </View>
 
@@ -537,6 +538,7 @@ export default function LoginScreen() {
             style={styles.forgotButton}
             activeOpacity={0.7}
             onPress={openRecovery}
+            accessibilityRole="button"
           >
             <Text style={styles.forgotText}>Esqueceu a senha?</Text>
           </TouchableOpacity>
@@ -545,6 +547,7 @@ export default function LoginScreen() {
             style={styles.loginButton}
             activeOpacity={0.85}
             onPress={handleLogin}
+            accessibilityRole="button"
           >
             <Text style={styles.loginButtonText}>Entrar</Text>
           </TouchableOpacity>
@@ -554,6 +557,7 @@ export default function LoginScreen() {
             <TouchableOpacity
               activeOpacity={0.7}
               onPress={() => router.push(buildRegisterHref(redirect))}
+              accessibilityRole="button"
             >
               <Text style={styles.registerLink}>Cadastre-se</Text>
             </TouchableOpacity>

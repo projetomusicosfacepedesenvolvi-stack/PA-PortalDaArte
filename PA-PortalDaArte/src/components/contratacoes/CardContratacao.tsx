@@ -2,13 +2,13 @@
 import React from 'react';
 import {
   StyleSheet,
-  Text,
   View,
   Pressable,
 } from 'react-native';
 import { Music, ChevronRight } from 'lucide-react-native';
 import { useTheme } from '../context/ThemeContext';
 
+import { VLibrasText as Text } from '../accessibility/VLibrasText';
 type IconType = typeof Music;
 
 export type Contratacao = {

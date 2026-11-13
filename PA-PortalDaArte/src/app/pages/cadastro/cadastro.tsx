@@ -1,22 +1,11 @@
 import React, { useEffect, useState } from "react";
-import {
-  ActivityIndicator,
-  FlatList,
-  KeyboardAvoidingView,
-  Modal,
-  Platform,
-  SafeAreaView,
-  ScrollView,
-  StyleSheet,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  View,
-} from "react-native";
+import { ActivityIndicator, FlatList, KeyboardAvoidingView, Modal, Platform, SafeAreaView, ScrollView, StyleSheet, TouchableOpacity, View } from 'react-native';
+import { AccessibleTextInput as TextInput } from '../../../components/accessibility/AccessibleTextInput';
 import { router, useLocalSearchParams } from "expo-router";
 import { Lock } from "lucide-react-native";
 import { buildLoginHref, sanitizeRedirect } from "../../../constants/auth-routes";
 
+import { VLibrasText as Text } from '../../../components/accessibility/VLibrasText';
 const DOC_TYPES = ["CPF", "CNPJ", "MEI"];
 const URL_API = process.env.EXPO_PUBLIC_API_URL || "http://127.0.0.1:8000";
 
@@ -179,6 +168,7 @@ export default function RegisterScreen() {
           style={styles.modalOverlay}
           activeOpacity={1}
           onPress={() => setActivePicker(null)}
+          accessibilityRole="button"
         >
           <View style={styles.modalContent}>
             <Text style={styles.modalTitle}>{title}</Text>
@@ -202,6 +192,7 @@ export default function RegisterScreen() {
                       setActivePicker(null);
                       if (error) setError("");
                     }}
+                    accessibilityRole="button"
                   >
                     <Text style={styles.modalOptionText}>{item}</Text>
                   </TouchableOpacity>
@@ -252,6 +243,7 @@ export default function RegisterScreen() {
                   autoCapitalize="none"
                   autoCorrect={false}
                   style={styles.input}
+                  accessibilityLabel={"E-mail"}
                 />
               </View>
 
@@ -267,6 +259,7 @@ export default function RegisterScreen() {
                   placeholderTextColor="#9D8E85"
                   autoCapitalize="words"
                   style={styles.input}
+                  accessibilityLabel={"Nome completo"}
                 />
               </View>
             </View>
@@ -286,6 +279,7 @@ export default function RegisterScreen() {
                 autoCapitalize="none"
                 autoCorrect={false}
                 style={styles.passwordInput}
+                accessibilityLabel={"Senha"}
               />
             </View>
 
@@ -296,6 +290,7 @@ export default function RegisterScreen() {
                   style={styles.selectInput}
                   activeOpacity={0.7}
                   onPress={() => setActivePicker("docType")}
+                  accessibilityRole="button"
                 >
                   <Text
                     style={docType ? styles.selectText : styles.placeholderText}
@@ -326,6 +321,11 @@ export default function RegisterScreen() {
                     styles.input,
                     !docType && { backgroundColor: "#F9F1EC" },
                   ]}
+                  accessibilityLabel={String(docType === "CPF"
+                    ? "CPF"
+                    : docType === "MEI" || docType === "CNPJ"
+                    ? "CNPJ"
+                    : "CPF ou CNPJ")}
                 />
               </View>
             </View>
@@ -337,6 +337,7 @@ export default function RegisterScreen() {
                   style={styles.selectInput}
                   activeOpacity={0.7}
                   onPress={() => setActivePicker("state")}
+                  accessibilityRole="button"
                 >
                   <Text
                     style={state ? styles.selectText : styles.placeholderText}
@@ -361,6 +362,7 @@ export default function RegisterScreen() {
                       setActivePicker("city");
                     }
                   }}
+                  accessibilityRole="button"
                 >
                   <Text
                     style={city ? styles.selectText : styles.placeholderText}
@@ -378,6 +380,7 @@ export default function RegisterScreen() {
               style={styles.registerButton}
               activeOpacity={0.85}
               onPress={handleRegister}
+              accessibilityRole="button"
             >
               <Text style={styles.registerButtonText}>Cadastrar</Text>
             </TouchableOpacity>
@@ -387,6 +390,7 @@ export default function RegisterScreen() {
               <TouchableOpacity
                 activeOpacity={0.7}
                 onPress={() => router.push(buildLoginHref(redirect))}
+                accessibilityRole="button"
               >
                 <Text style={styles.footerLink}>Entrar</Text>
               </TouchableOpacity>

@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { StyleSheet, Text, View, TouchableOpacity } from 'react-native';
+import { StyleSheet, View, TouchableOpacity } from 'react-native';
 import {
   Compass,
   Heart,
@@ -17,6 +17,7 @@ import Animated, {
 import { useTheme } from './context/ThemeContext';
 import { useAuth } from './context/AuthContext';
 
+import { VLibrasText as Text } from './accessibility/VLibrasText';
 export const MENU_ITEMS = [
   { id: 'explorar', label: 'Descobrir', icon: Compass, route: '/pages/explorar/explorar' },
   { id: 'favoritos', label: 'Favoritos', icon: Heart, route: '/pages/favoritos/favoritos', private: true },
@@ -103,6 +104,8 @@ export default function Sidebar() {
         onPress={() => router.navigate('/pages/explorar/explorar')}
         activeOpacity={0.8}
         style={styles.brandContainer}
+        accessibilityRole="link"
+        accessibilityLabel="Portal da Arte, ir para Descobrir"
       >
         <Text style={styles.brandTitle}>Portal da Arte</Text>
       </TouchableOpacity>
@@ -124,6 +127,9 @@ export default function Sidebar() {
               onLayout={(e) => handleLayout(item.id, e)}
               onPress={() => handleNavigation(item)}
               activeOpacity={0.7}
+              accessibilityRole="link"
+              accessibilityLabel={item.label}
+              accessibilityState={{ selected: isActive }}
             >
               <Icon
                 size={18}

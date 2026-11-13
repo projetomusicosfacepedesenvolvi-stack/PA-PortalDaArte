@@ -9,14 +9,15 @@
 //   Platform,
 // } from 'react-native';
 // import {
-//   Music,
-//   Headphones,
-//   Mic,
-// } from 'lucide-react-native';
+  //   Music,
+  //   Headphones,
+  //   Mic,
+  // } from 'lucide-react-native';
 
-// import CardContratacao, {
+// import CardContratacao,
+  
 //   type Contratacao,
-// } from '../../../components/contratacoes/CardContratacao';
+  // } from '../../../components/contratacoes/CardContratacao';
 
 // // Importações dos Componentes e do Contexto
 // import Sidebar from '../../../components/Sidebar';
@@ -26,7 +27,6 @@
 import React from 'react';
 import {
   StyleSheet,
-  Text,
   View,
   SafeAreaView,
   StatusBar,
@@ -43,6 +43,7 @@ import Header from '../../../components/Header';
 import { useTheme } from '../../../components/context/ThemeContext';
 
 
+import { VLibrasText as Text } from '../../../components/accessibility/VLibrasText';
 // Função auxiliar para definir as cores da etiqueta de status
 const getStatusStyles = (status: string) => {
   switch (status) {

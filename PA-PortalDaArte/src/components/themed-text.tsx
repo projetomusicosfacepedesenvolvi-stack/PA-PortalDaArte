@@ -1,7 +1,8 @@
-import { StyleSheet, Text, type TextProps } from 'react-native';
+import { StyleSheet, type TextProps } from 'react-native';
 
 import { useThemeColor } from '@/hooks/use-theme-color';
 
+import { VLibrasText as Text } from './accessibility/VLibrasText';
 export type ThemedTextProps = TextProps & {
   lightColor?: string;
   darkColor?: string;
