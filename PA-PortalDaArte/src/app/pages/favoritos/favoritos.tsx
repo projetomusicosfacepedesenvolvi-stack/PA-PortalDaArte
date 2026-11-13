@@ -1,16 +1,21 @@
-import { Camera, Heart, Mic, Music, Palette, Sparkles } from "lucide-react-native";
+import {
+ Camera,
+ Heart,
+ Mic,
+ Music,
+ Palette,
+ Sparkles } from "lucide-react-native";
 import { useRouter } from "expo-router";
 import React from "react";
 import {
   Image,
-  Platform,
-  SafeAreaView,
-  ScrollView,
-  StatusBar,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
+ Platform,
+ SafeAreaView,
+ ScrollView,
+ StatusBar,
+ StyleSheet,
+ TouchableOpacity,
+ View,
 } from "react-native";
 
 // Importações dos Componentes e do Contexto
@@ -20,6 +25,7 @@ import { useTheme } from "../../../components/context/ThemeContext";
 import { useFavorites } from "../../../components/context/FavoritesContext";
 import { DISCOVER_ROUTE } from "../../../constants/auth-routes";
 
+import { VLibrasText as Text } from '../../../components/accessibility/VLibrasText';
 // Ícone e cores do avatar por categoria (a mesma paleta que a tela já usava).
 const CATEGORY_VISUALS: Record<string, { icon: any; lightBg: string; darkBg: string; color: string }> = {
   "Músicos": { icon: Mic, lightBg: "#FDE4D9", darkBg: "#3D2218", color: "#E05A10" },
@@ -44,6 +50,7 @@ function FavoriteAvatar({ uri, id, background, icon: Icon, color, styles }: any)
           style={styles.avatarImage}
           onError={() => setFailed(true)}
           testID={`favorite-avatar-${id}`}
+          accessible={false}
         />
       ) : (
         <Icon size={24} color={color} />
@@ -129,6 +136,7 @@ export default function IndexScreen() {
                     style={styles.emptyButton}
                     activeOpacity={0.85}
                     onPress={() => router.navigate(DISCOVER_ROUTE as any)}
+                    accessibilityRole="button"
                   >
                     <Text style={styles.btnContractText}>Descobrir artistas</Text>
                   </TouchableOpacity>
@@ -196,6 +204,7 @@ export default function IndexScreen() {
   }
   accessibilityLabel={`Contratar ${item.name}`}
   testID={`contract-${item.id}`}
+                             accessibilityRole="button"
 >
   <Text style={styles.btnContractText}>Contratar</Text>
 </TouchableOpacity>
@@ -206,6 +215,7 @@ export default function IndexScreen() {
                               onPress={() => removeFavorite(item.id)}
                               accessibilityLabel={`Remover ${item.name} dos favoritos`}
                               testID={`remove-favorite-${item.id}`}
+                              accessibilityRole="button"
                             >
                               <Heart size={16} color={theme.accent} fill={theme.accent} />
                             </TouchableOpacity>

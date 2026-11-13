@@ -1,19 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import {
-  View,
-  Text,
-  TextInput,
-  TextInputProps,
-  Switch,
-  ScrollView,
-  TouchableOpacity,
-  StyleSheet,
-  StyleProp,
-  ViewStyle,
-  useWindowDimensions,
-  Platform,
-  Alert,
-} from 'react-native';
+import { View, TextInputProps, Switch, ScrollView, TouchableOpacity, StyleSheet, StyleProp, ViewStyle, useWindowDimensions, Platform, Alert } from 'react-native';
+import { AccessibleTextInput as TextInput } from '../../../components/accessibility/AccessibleTextInput';
 import { Ionicons } from '@expo/vector-icons';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useTheme } from '../../../components/context/ThemeContext';
@@ -23,6 +10,7 @@ import Header from '../../../components/Header';
 import Sidebar from '../../../components/Sidebar';
 
 
+import { VLibrasText as Text } from '../../../components/accessibility/VLibrasText';
 interface Theme {
   textPrimary: string;
   textSecondary: string;
@@ -333,6 +321,7 @@ const Field = ({ label, theme, error, containerStyle, style, ...props }: FieldPr
         props.multiline && styles.textArea,
         style,
       ]}
+      accessibilityLabel={String(label)}
     />
     {!!error && <Text style={styles.errorText}>{error}</Text>}
   </View>
@@ -750,6 +739,7 @@ export default function ContratarScreen({ onSubmit }: ContratarScreenProps) {
             <TouchableOpacity
               style={[styles.btn, { backgroundColor: theme.accent, alignSelf: 'flex-start' }]}
               onPress={voltar}
+              accessibilityRole="button"
             >
               <Text style={[styles.btnText, { color: '#FFFFFF' }]}>Voltar</Text>
             </TouchableOpacity>
@@ -776,6 +766,7 @@ export default function ContratarScreen({ onSubmit }: ContratarScreenProps) {
             <TouchableOpacity
               style={[styles.btn, { backgroundColor: theme.accent, alignSelf: 'flex-start' }]}
               onPress={voltar}
+              accessibilityRole="button"
             >
               <Text style={[styles.btnText, { color: '#FFFFFF' }]}>Voltar</Text>
             </TouchableOpacity>
@@ -845,6 +836,7 @@ export default function ContratarScreen({ onSubmit }: ContratarScreenProps) {
                 style={[styles.btn, { backgroundColor: theme.searchBg, marginLeft: 16 }]}
                 onPress={voltar}
                 disabled={enviando}
+                accessibilityRole="button"
               >
                 <Text style={[styles.btnText, { color: theme.textPrimary }]}>Cancelar</Text>
               </TouchableOpacity>
@@ -856,6 +848,7 @@ export default function ContratarScreen({ onSubmit }: ContratarScreenProps) {
                 ]}
                 onPress={enviar}
                 disabled={enviando}
+                accessibilityRole="button"
               >
                 <Text style={[styles.btnText, { color: '#FFFFFF' }]}>
                   {enviando ? 'Enviando...' : negociando ? 'Enviar proposta' : 'Enviar solicitação'}

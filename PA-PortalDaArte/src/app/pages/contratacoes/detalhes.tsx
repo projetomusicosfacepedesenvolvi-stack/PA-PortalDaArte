@@ -5,7 +5,6 @@ import {
   StatusBar,
   ScrollView,
   StyleSheet,
-  Text,
   View,
   Pressable,
   Platform,
@@ -18,6 +17,7 @@ import Header from '../../../components/Header';
 import { useTheme } from '../../../components/context/ThemeContext';
 import { CONTRATACOES_LIST } from '../../../components/contratacoes/contratacoesData';
 
+import { VLibrasText as Text } from '../../../components/accessibility/VLibrasText';
 export default function DetalhesContratacaoScreen() {
   const router = useRouter();
   const { id } = useLocalSearchParams<{ id: string }>();
@@ -40,6 +40,7 @@ export default function DetalhesContratacaoScreen() {
           <Pressable
             onPress={() => router.back()}
             style={styles.backButton}
+            accessibilityRole="button"
           >
             <ArrowLeft size={18} color={theme.textPrimary} />
             <Text style={styles.backButtonText}>
@@ -88,6 +89,7 @@ export default function DetalhesContratacaoScreen() {
               <Pressable
                 onPress={() => router.back()}
                 style={styles.backButton}
+                accessibilityRole="button"
               >
                 <ArrowLeft size={20} color={theme.textPrimary} />
                 <Text style={styles.backButtonText}>

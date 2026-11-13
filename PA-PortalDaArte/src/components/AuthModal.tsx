@@ -1,10 +1,11 @@
 import React, { useEffect } from "react";
-import { Modal, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { Modal, StyleSheet, TouchableOpacity, View } from "react-native";
 import { usePathname, useRouter } from "expo-router";
 import { useTheme } from "./context/ThemeContext";
 import { closeAuthModal, useAuthModal } from "./context/AuthContext";
 import { buildLoginHref, buildRegisterHref } from "../constants/auth-routes";
 
+import { VLibrasText as Text } from './accessibility/VLibrasText';
 export const AUTH_MODAL_MESSAGE =
   "Crie uma conta ou faça login no Portal da Arte para visualizar perfis completos, enviar mensagens e contratar artistas.";
 
@@ -36,11 +37,13 @@ export default function AuthModal() {
         style={styles.overlay}
         activeOpacity={1}
         onPress={closeAuthModal}
+        accessibilityRole="button"
         accessibilityLabel="Fechar aviso"
+        accessibilityHint="Fecha este aviso sem entrar ou criar uma conta"
       >
         {/* O toque dentro do cartão não fecha o modal */}
         <TouchableOpacity activeOpacity={1} style={styles.card} testID="auth-modal-card" accessibilityViewIsModal>
-          <Text style={styles.title}>Entre no Portal da Arte</Text>
+          <Text style={styles.title} accessibilityRole="header">Entre no Portal da Arte</Text>
           <Text style={styles.message}>{AUTH_MODAL_MESSAGE}</Text>
 
           <TouchableOpacity
@@ -48,6 +51,8 @@ export default function AuthModal() {
             activeOpacity={0.85}
             testID="auth-modal-login"
             onPress={() => go(buildLoginHref(redirect))}
+            accessibilityRole="button"
+            accessibilityLabel="Entrar na conta"
           >
             <Text style={styles.primaryText}>Entrar</Text>
           </TouchableOpacity>
@@ -57,11 +62,13 @@ export default function AuthModal() {
             activeOpacity={0.85}
             testID="auth-modal-register"
             onPress={() => go(buildRegisterHref(redirect))}
+            accessibilityRole="button"
+            accessibilityLabel="Criar uma conta"
           >
             <Text style={styles.secondaryText}>Criar conta</Text>
           </TouchableOpacity>
 
-          <TouchableOpacity style={styles.dismiss} onPress={closeAuthModal} testID="auth-modal-close">
+          <TouchableOpacity style={styles.dismiss} onPress={closeAuthModal} testID="auth-modal-close" accessibilityRole="button" accessibilityLabel="Agora não">
             <Text style={styles.dismissText}>Agora não</Text>
           </TouchableOpacity>
         </TouchableOpacity>

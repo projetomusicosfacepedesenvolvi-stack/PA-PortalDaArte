@@ -9,7 +9,6 @@ import {
   ScrollView,
   StatusBar,
   StyleSheet,
-  Text,
   TouchableOpacity,
   View,
 } from "react-native";
@@ -23,6 +22,7 @@ import { useTheme } from "../../../components/context/ThemeContext";
 import { openPortfolioFile, portfolioCoverFromApi, portfolioFileFromApi } from "../../../services/portfolio";
 import type { PortfolioFile } from "../../../services/portfolio";
 
+import { VLibrasText as Text } from '../../../components/accessibility/VLibrasText';
 const URL_API = process.env.EXPO_PUBLIC_API_URL || "http://127.0.0.1:8000";
 
 const firstValue = (...values: any[]) =>
@@ -164,7 +164,8 @@ export default function PerfilPublicoScreen() {
               <View style={styles.stateBox}>
                 <Text style={styles.errorTitle}>Não foi possível abrir o perfil</Text>
                 <Text style={styles.stateText}>{error}</Text>
-                <TouchableOpacity style={styles.secondaryButton} onPress={() => router.back()}>
+                <TouchableOpacity style={styles.secondaryButton} onPress={() => router.back()}
+                  accessibilityRole="button">
                   <Text style={styles.secondaryButtonText}>Voltar</Text>
                 </TouchableOpacity>
               </View>
@@ -173,7 +174,8 @@ export default function PerfilPublicoScreen() {
                 <View style={styles.heroCard}>
                   <View style={styles.heroTop}>
                     {photo ? (
-                      <Image source={{ uri: String(photo) }} style={styles.avatar} />
+                      <Image source={{ uri: String(photo) }} style={styles.avatar}
+                        accessibilityLabel={`Foto de perfil de ${name}`} />
                     ) : (
                       <View style={styles.avatarFallback}><Music size={38} color={theme.accent} /></View>
                     )}
@@ -195,7 +197,8 @@ export default function PerfilPublicoScreen() {
                       </View>
                     </View>
                   </View>
-                  <TouchableOpacity style={styles.messageButton} onPress={handleSendMessage} activeOpacity={0.85}>
+                  <TouchableOpacity style={styles.messageButton} onPress={handleSendMessage} activeOpacity={0.85}
+                    accessibilityRole="button">
                     <MessageCircle size={18} color="#FFFFFF" />
                     <Text style={styles.messageButtonText}>Enviar mensagem</Text>
                   </TouchableOpacity>
@@ -246,6 +249,7 @@ export default function PerfilPublicoScreen() {
                         style={styles.serviceItem}
                         activeOpacity={0.78}
                         onPress={() => { setSelectedService(service); setIsServiceModalVisible(true); }}
+                        accessibilityRole="button"
                       >
                         <View style={styles.serviceIcon}><Music size={17} color={theme.accent} /></View>
                         <View style={styles.serviceTextWrap}>
@@ -266,7 +270,8 @@ export default function PerfilPublicoScreen() {
                           <Text style={styles.modalTitle} numberOfLines={2}>{asText(firstValue(selectedService?.titulo, selectedService?.title, selectedService?.nome, "Detalhes do serviço"))}</Text>
                           <Text style={styles.modalSubtitle}>Informações do serviço</Text>
                         </View>
-                        <TouchableOpacity style={styles.modalCloseButton} onPress={() => setIsServiceModalVisible(false)} accessibilityLabel="Fechar detalhes">
+                        <TouchableOpacity style={styles.modalCloseButton} onPress={() => setIsServiceModalVisible(false)} accessibilityLabel="Fechar detalhes"
+                          accessibilityRole="button">
                           <X size={19} color={theme.textSecondary} />
                         </TouchableOpacity>
                       </View>
@@ -285,7 +290,8 @@ export default function PerfilPublicoScreen() {
                         </View>
                       </ScrollView>
                       <View style={styles.modalFooter}>
-                        <TouchableOpacity onPress={() => setIsServiceModalVisible(false)} style={styles.modalCloseAction}>
+                        <TouchableOpacity onPress={() => setIsServiceModalVisible(false)} style={styles.modalCloseAction}
+                          accessibilityRole="button">
                           <Text style={styles.modalCloseActionText}>Fechar</Text>
                         </TouchableOpacity>
                       </View>

@@ -1,20 +1,6 @@
 import React, { useCallback, useDeferredValue, useEffect, useMemo, useRef, useState } from "react";
-import {
-  FlatList,
-  Image,
-  Modal,
-  PanResponder,
-  Platform,
-  SafeAreaView,
-  ScrollView,
-  StatusBar,
-  StyleSheet,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  useWindowDimensions,
-  View,
-} from "react-native";
+import { FlatList, Image, Modal, PanResponder, Platform, SafeAreaView, ScrollView, StatusBar, StyleSheet, TouchableOpacity, useWindowDimensions, View } from 'react-native';
+import { AccessibleTextInput as TextInput } from '../../../components/accessibility/AccessibleTextInput';
 import Header from "../../../components/Header";
 import Sidebar from "../../../components/Sidebar";
 import { useTheme } from "../../../components/context/ThemeContext";
@@ -25,6 +11,7 @@ import { useFavorites } from "../../../components/context/FavoritesContext";
 import { ARTIST_PROFILE_ROUTE, DISCOVER_ROUTE, FAVORITES_ROUTE } from "../../../constants/auth-routes";
 import { buildCategoryOptions, categoryKey } from "../../../constants/artist-categories";
 
+import { VLibrasText as Text } from '../../../components/accessibility/VLibrasText';
 const URL_API = process.env.EXPO_PUBLIC_API_URL || "http://127.0.0.1:8000";
 
 // Geocodificação de cidades para calcular distância em linha reta.
@@ -646,6 +633,8 @@ export default function ExplorarScreen() {
         <TouchableOpacity
           style={styles.cardHeart}
           onPress={() => toggleFavorite(item)}
+          accessibilityRole="button"
+          accessibilityLabel={isFav ? `Remover ${item.name} dos favoritos` : `Adicionar ${item.name} aos favoritos`} accessibilityState={{ checked: isFav }}
         >
           <Text style={isFav ? styles.heartIconActive : styles.heartIcon}>
             {isFav ? "♥" : "♡"}
@@ -659,7 +648,8 @@ export default function ExplorarScreen() {
             ]}
           >
             {item.avatarUrl ? (
-              <Image source={{ uri: item.avatarUrl }} style={styles.artistAvatarImage} />
+              <Image source={{ uri: item.avatarUrl }} style={styles.artistAvatarImage}
+                accessible={false} />
             ) : (
               <Text style={styles.avatarEmoji}>{item.emoji}</Text>
             )}
@@ -680,6 +670,7 @@ export default function ExplorarScreen() {
           style={styles.profileButton}
           activeOpacity={0.85}
           onPress={() => openArtistProfile(item)}
+          accessibilityRole="button"
         >
           <Text style={styles.profileButtonText}>Ver perfil</Text>
         </TouchableOpacity>
@@ -691,13 +682,15 @@ export default function ExplorarScreen() {
     <ScrollView style={styles.filterScroll} showsVerticalScrollIndicator={false} persistentScrollbar={false} nestedScrollEnabled>
       <View style={styles.filterHeader}>
         <Text style={styles.filterTitle}>Filtros</Text>
-        <TouchableOpacity onPress={clearFilters}>
+        <TouchableOpacity onPress={clearFilters}
+          accessibilityRole="button">
           <Text style={styles.clearFilters}>Limpar</Text>
         </TouchableOpacity>
       </View>
 
       <View style={styles.filterBlock}>
-        <TouchableOpacity style={styles.filterBlockHeader} onPress={() => setExpandedFilters((prev) => ({ ...prev, category: !prev.category }))} activeOpacity={0.75}>
+        <TouchableOpacity style={styles.filterBlockHeader} onPress={() => setExpandedFilters((prev) => ({ ...prev, category: !prev.category }))} activeOpacity={0.75}
+          accessibilityRole="button">
           <Text style={styles.filterSubTitle}>Categoria</Text>
           <View style={styles.expandButton}><Text style={styles.arrowIcon}>{expandedFilters.category ? "−" : "+"}</Text></View>
         </TouchableOpacity>
@@ -710,6 +703,7 @@ export default function ExplorarScreen() {
               key={option}
               style={styles.radioItem}
               onPress={() => setCategory(option)}
+              accessibilityRole="button"
             >
               <Text style={active ? styles.radioActive : styles.radioInactive}>
                 {active ? "◉" : "◯"}
@@ -729,14 +723,16 @@ export default function ExplorarScreen() {
       <View style={styles.divider} />
 
       <View style={styles.filterBlock}>
-        <TouchableOpacity style={styles.filterBlockHeader} onPress={() => setExpandedFilters((prev) => ({ ...prev, modality: !prev.modality }))} activeOpacity={0.75}>
+        <TouchableOpacity style={styles.filterBlockHeader} onPress={() => setExpandedFilters((prev) => ({ ...prev, modality: !prev.modality }))} activeOpacity={0.75}
+          accessibilityRole="button">
           <Text style={styles.filterSubTitle}>Modalidade de atendimento</Text>
           <View style={styles.expandButton}><Text style={styles.arrowIcon}>{expandedFilters.modality ? "−" : "+"}</Text></View>
         </TouchableOpacity>
         {expandedFilters.modality && MODALITY_OPTIONS.map((option) => {
           const active = modality === option.id;
           return (
-            <TouchableOpacity key={option.id} style={styles.radioItem} onPress={() => setModality(option.id)}>
+            <TouchableOpacity key={option.id} style={styles.radioItem} onPress={() => setModality(option.id)}
+              accessibilityRole="button">
               <Text style={active ? styles.radioActive : styles.radioInactive}>{active ? "◉" : "◯"}</Text>
               <Text style={active ? styles.filterLabelActive : styles.filterLabel}>{option.label}</Text>
             </TouchableOpacity>
@@ -749,7 +745,8 @@ export default function ExplorarScreen() {
           <View style={styles.divider} />
 
           <View style={styles.filterBlock}>
-            <TouchableOpacity style={styles.filterBlockHeader} onPress={() => setExpandedFilters((prev) => ({ ...prev, service: !prev.service }))} activeOpacity={0.75}>
+            <TouchableOpacity style={styles.filterBlockHeader} onPress={() => setExpandedFilters((prev) => ({ ...prev, service: !prev.service }))} activeOpacity={0.75}
+              accessibilityRole="button">
               <Text style={styles.filterSubTitle}>Serviços</Text>
               <View style={styles.expandButton}><Text style={styles.arrowIcon}>{expandedFilters.service ? "−" : "+"}</Text></View>
             </TouchableOpacity>
@@ -758,7 +755,8 @@ export default function ExplorarScreen() {
                 {[ALL_SERVICES, ...serviceOptions].map((option) => {
                   const active = activeService === option;
                   return (
-                    <TouchableOpacity key={option} style={styles.radioItem} onPress={() => setServiceFilter(option)}>
+                    <TouchableOpacity key={option} style={styles.radioItem} onPress={() => setServiceFilter(option)}
+                      accessibilityRole="button">
                       <Text style={active ? styles.radioActive : styles.radioInactive}>{active ? "◉" : "◯"}</Text>
                       <Text style={[active ? styles.filterLabelActive : styles.filterLabel, { flexShrink: 1 }]}>{option}</Text>
                     </TouchableOpacity>
@@ -773,7 +771,8 @@ export default function ExplorarScreen() {
       <View style={styles.divider} />
 
       <View style={styles.filterBlock}>
-        <TouchableOpacity style={styles.filterBlockHeader} onPress={() => setExpandedFilters((prev) => ({ ...prev, price: !prev.price }))} activeOpacity={0.75}>
+        <TouchableOpacity style={styles.filterBlockHeader} onPress={() => setExpandedFilters((prev) => ({ ...prev, price: !prev.price }))} activeOpacity={0.75}
+          accessibilityRole="button">
           <Text style={styles.filterSubTitle}>Preço por hora</Text>
           <View style={styles.expandButton}><Text style={styles.arrowIcon}>{expandedFilters.price ? "−" : "+"}</Text></View>
         </TouchableOpacity>
@@ -809,6 +808,7 @@ export default function ExplorarScreen() {
               style={styles.priceInput}
               placeholder="0"
               placeholderTextColor={theme.textSecondary}
+              accessibilityLabel={"Mín:"}
             />
           </View>
           <View style={styles.priceInputBox}>
@@ -820,6 +820,7 @@ export default function ExplorarScreen() {
               style={styles.priceInput}
               placeholder={String(sliderMax)}
               placeholderTextColor={theme.textSecondary}
+              accessibilityLabel={"Máx:"}
             />
           </View>
         </View>
@@ -829,7 +830,8 @@ export default function ExplorarScreen() {
       <View style={styles.divider} />
 
       <View style={styles.filterBlock}>
-        <TouchableOpacity style={styles.filterBlockHeader} onPress={() => setExpandedFilters((prev) => ({ ...prev, rating: !prev.rating }))} activeOpacity={0.75}>
+        <TouchableOpacity style={styles.filterBlockHeader} onPress={() => setExpandedFilters((prev) => ({ ...prev, rating: !prev.rating }))} activeOpacity={0.75}
+          accessibilityRole="button">
           <Text style={styles.filterSubTitle}>Avaliação mínima</Text>
           <View style={styles.expandButton}><Text style={styles.arrowIcon}>{expandedFilters.rating ? "−" : "+"}</Text></View>
         </TouchableOpacity>
@@ -842,6 +844,7 @@ export default function ExplorarScreen() {
               key={option}
               style={styles.checkItem}
               onPress={() => setRatingFilter(active ? 0 : option)}
+              accessibilityRole="button"
             >
               <Text
                 style={active ? styles.checkboxActive : styles.checkboxInactive}
@@ -862,12 +865,14 @@ export default function ExplorarScreen() {
       <View style={styles.divider} />
 
       <View style={styles.filterBlock}>
-        <TouchableOpacity style={styles.filterBlockHeader} onPress={() => setExpandedFilters((prev) => ({ ...prev, location: !prev.location }))} activeOpacity={0.75}>
+        <TouchableOpacity style={styles.filterBlockHeader} onPress={() => setExpandedFilters((prev) => ({ ...prev, location: !prev.location }))} activeOpacity={0.75}
+          accessibilityRole="button">
           <Text style={styles.filterSubTitle}>Localização</Text>
           <View style={styles.expandButton}><Text style={styles.arrowIcon}>{expandedFilters.location ? "−" : "+"}</Text></View>
         </TouchableOpacity>
         {expandedFilters.location && <>
-          <TouchableOpacity style={styles.locationInputBox} onPress={() => { setLocationSearch(""); setLocationStep("state"); setLocationModalVisible(true); }} activeOpacity={0.8}>
+          <TouchableOpacity style={styles.locationInputBox} onPress={() => { setLocationSearch(""); setLocationStep("state"); setLocationModalVisible(true); }} activeOpacity={0.8}
+            accessibilityRole="button">
             <Text style={styles.locIcon}></Text>
             <Text style={styles.locInput}>{location || "Selecionar cidade e estado"}</Text>
             <Text style={styles.arrowIcon}>⌄</Text>
@@ -875,7 +880,8 @@ export default function ExplorarScreen() {
           <Text style={styles.distanceLabel}>Distância máxima</Text>
           <View style={styles.pillsRow}>
             {DISTANCE_OPTIONS.map((option) => (
-              <TouchableOpacity key={option} style={[styles.pill, distance === option && styles.pillActive]} onPress={() => setDistance(option)}>
+              <TouchableOpacity key={option} style={[styles.pill, distance === option && styles.pillActive]} onPress={() => setDistance(option)}
+                accessibilityRole="button">
                 <Text style={distance === option ? styles.pillTextActive : styles.pillText}>{option} km</Text>
               </TouchableOpacity>
             ))}
@@ -887,6 +893,7 @@ export default function ExplorarScreen() {
         <TouchableOpacity
           style={styles.applyFilterButton}
           onPress={() => setFilterModalVisible(false)}
+          accessibilityRole="button"
         >
           <Text style={styles.applyFilterButtonText}>Ver Resultados</Text>
         </TouchableOpacity>
@@ -918,6 +925,7 @@ export default function ExplorarScreen() {
                     <TouchableOpacity
                       style={styles.mobileFilterBtn}
                       onPress={() => setFilterModalVisible(true)}
+                      accessibilityRole="button"
                     >
                       <Text style={styles.mobileFilterBtnText}>⚙️ Filtrar</Text>
                     </TouchableOpacity>
@@ -936,6 +944,7 @@ export default function ExplorarScreen() {
                     <TouchableOpacity
                       style={styles.sortDropdown}
                       onPress={() => setSortOpen((value) => !value)}
+                      accessibilityRole="button"
                     >
                       <Text style={styles.sortText}>
                         Ordenar:{" "}
@@ -961,6 +970,7 @@ export default function ExplorarScreen() {
                               setSort(option.id);
                               setSortOpen(false);
                             }}
+                            accessibilityRole="button"
                           >
                             <Text
                               style={
@@ -1014,7 +1024,8 @@ export default function ExplorarScreen() {
                             : "Tente outra busca ou limpe os filtros."}
                     </Text>
                     {!loadingArtists && (artistsError || artists.length === 0) ? (
-                      <TouchableOpacity style={styles.retryButton} activeOpacity={0.85} onPress={() => loadArtists(false)}>
+                      <TouchableOpacity style={styles.retryButton} activeOpacity={0.85} onPress={() => loadArtists(false)}
+                        accessibilityRole="button">
                         <Text style={styles.profileButtonText}>{artistsError ? "Tentar novamente" : "Atualizar"}</Text>
                       </TouchableOpacity>
                     ) : null}
@@ -1069,7 +1080,8 @@ export default function ExplorarScreen() {
                       <Text style={styles.filterTitle}>{locationStep === "state" ? "Selecionar estado" : "Selecionar cidade"}</Text>
                       <Text style={styles.locationModalSubtitle}>{locationStep === "state" ? "Escolha o estado desejado" : `Estado: ${selectedState?.nome || ""}`}</Text>
                     </View>
-                    <TouchableOpacity style={styles.modalClosePill} onPress={() => setLocationModalVisible(false)}><Text style={styles.clearFilters}>Fechar</Text></TouchableOpacity>
+                    <TouchableOpacity style={styles.modalClosePill} onPress={() => setLocationModalVisible(false)}
+                      accessibilityRole="button"><Text style={styles.clearFilters}>Fechar</Text></TouchableOpacity>
                   </View>
                   <TouchableOpacity
                     style={[styles.locationListItem, location === ALL_LOCATIONS && styles.sortOptionActive]}
@@ -1080,17 +1092,21 @@ export default function ExplorarScreen() {
                       setSelectedState(null);
                       setLocationStep("state");
                     }}
+                    accessibilityRole="button"
                   >
                     <Text style={[styles.locationListItemText, location === ALL_LOCATIONS && { color: theme.accent, fontWeight: "700" }]}>Todas as localidades</Text>
                   </TouchableOpacity>
-                  <TextInput value={locationSearch} onChangeText={setLocationSearch} style={styles.locationSearchInput} placeholder={locationStep === "state" ? "Buscar estado..." : "Buscar cidade..."} placeholderTextColor={theme.textSecondary} />
-                  {locationStep === "city" && <TouchableOpacity style={styles.backToStates} onPress={() => { setLocationStep("state"); setLocationSearch(""); }}><Text style={styles.clearFilters}>← Escolher outro estado</Text></TouchableOpacity>}
+                  <TextInput value={locationSearch} onChangeText={setLocationSearch} style={styles.locationSearchInput} placeholder={locationStep === "state" ? "Buscar estado..." : "Buscar cidade..."} placeholderTextColor={theme.textSecondary}
+                    accessibilityLabel={"Todas as localidades"} />
+                  {locationStep === "city" && <TouchableOpacity style={styles.backToStates} onPress={() => { setLocationStep("state"); setLocationSearch(""); }}
+                    accessibilityRole="button"><Text style={styles.clearFilters}>← Escolher outro estado</Text></TouchableOpacity>}
                   <ScrollView style={styles.locationList} keyboardShouldPersistTaps="handled">
                     {(locationStep === "state" ? ibgeStates.filter((item) => `${item.nome} ${item.sigla}`.toLowerCase().includes(locationSearch.toLowerCase())) : ibgeCities.filter((item) => item.nome.toLowerCase().includes(locationSearch.toLowerCase()))).map((item: any) => (
                       <TouchableOpacity key={item.id} style={styles.locationListItem} onPress={() => {
                         if (locationStep === "state") { setSelectedState(item); setLocationStep("city"); setLocationSearch(""); }
                         else { setLocation(`${item.nome}, ${selectedState?.sigla || ""}`); setLocationModalVisible(false); setLocationSearch(""); }
-                      }}>
+                      }}
+                        accessibilityRole="button">
                         <Text style={styles.locationListItemText}>{locationStep === "state" ? `${item.nome} (${item.sigla})` : item.nome}</Text>
                       </TouchableOpacity>
                     ))}

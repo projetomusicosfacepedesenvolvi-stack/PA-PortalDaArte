@@ -1,14 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import { 
-  Image,
-  DeviceEventEmitter,
-  StyleSheet, 
-  View, 
-  TextInput, 
-  TouchableOpacity, 
-  Text,
-  Modal
-} from 'react-native';
+import { Image, DeviceEventEmitter, StyleSheet, View, TouchableOpacity, Modal } from 'react-native';
+import { AccessibleTextInput as TextInput } from './accessibility/AccessibleTextInput';
 import { Search, Bell, Settings, Sun, Moon, LogOut, LogIn } from 'lucide-react-native';
 import { useTheme } from './context/ThemeContext';
 import { useWindowDimensions } from 'react-native';
@@ -18,6 +10,7 @@ import { buildLoginHref, DISCOVER_ROUTE, normalizePath } from '../constants/auth
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { router, usePathname } from 'expo-router';
 
+import { VLibrasText as Text } from './accessibility/VLibrasText';
 export default function Header() {
   const [isMenuVisible, setIsMenuVisible] = useState(false);
   const [isAvatarMenuVisible, setIsAvatarMenuVisible] = useState(false);
@@ -205,6 +198,9 @@ export default function Header() {
           onPress={() => setIsNotificationsVisible(!isNotificationsVisible)}
           activeOpacity={0.8}
           accessibilityLabel={unreadNotifications.length ? 'Notificações, há mensagens não lidas' : 'Notificações'}
+          accessibilityRole="button"
+          accessibilityHint="Abre a lista de notificações"
+          accessibilityState={{ expanded: isNotificationsVisible }}
         >
           <Bell size={20} color={theme.textSecondary} />
           {unreadNotifications.length > 0 && <View style={styles.notificationDot} />}
@@ -214,6 +210,10 @@ export default function Header() {
           style={styles.iconButton}
           onPress={() => setIsMenuVisible(!isMenuVisible)}
           activeOpacity={0.8}
+          accessibilityRole="button"
+          accessibilityLabel="Configurações"
+          accessibilityHint="Abre o menu de configurações"
+          accessibilityState={{ expanded: isMenuVisible }}
         >
           <Settings size={20} color={theme.textSecondary} />
         </TouchableOpacity>
@@ -237,11 +237,16 @@ export default function Header() {
             style={styles.userAvatar}
             onPress={() => setIsAvatarMenuVisible(!isAvatarMenuVisible)}
             activeOpacity={0.8}
+            accessibilityRole="button"
+            accessibilityLabel="Menu da conta"
+            accessibilityHint="Abre as opções da conta"
+            accessibilityState={{ expanded: isAvatarMenuVisible }}
           >
             {profileImage ? (
               <Image
                 source={{ uri: profileImage }}
                 style={styles.userAvatarImage}
+                accessible={false}
               />
             ) : (
               <Text style={styles.userAvatarText}>{userName}</Text>
@@ -261,6 +266,8 @@ export default function Header() {
           style={styles.modalOverlay}
           activeOpacity={1}
           onPress={() => setIsNotificationsVisible(false)}
+          accessibilityRole="button"
+          accessibilityLabel={"Fechar"}
         >
           <TouchableOpacity activeOpacity={1} style={[styles.dropdownMenu, styles.notificationsMenu]}>
             <View style={styles.notificationsHeader}>
@@ -279,6 +286,7 @@ export default function Header() {
                   setIsNotificationsVisible(false);
                   router.push('/pages/mensagens/mensagens' as any);
                 }}
+                accessibilityRole="button"
               >
                 <View style={styles.notificationBullet} />
                 <View style={styles.notificationCopy}>
@@ -311,11 +319,18 @@ export default function Header() {
           style={styles.modalOverlay} 
           activeOpacity={1} 
           onPress={() => setIsMenuVisible(false)}
+          accessibilityRole="button"
+          accessibilityLabel={"Fechar"}
         >
           <TouchableOpacity activeOpacity={1} style={styles.dropdownMenu}>
             <TouchableOpacity 
               style={styles.dropdownItem} 
-              onPress={() => setIsMenuVisible(false)}
+              onPress={() => {
+                setIsMenuVisible(false);
+                router.push('/pages/configuracoes/configuracoes' as any);
+              }}
+              accessibilityRole="button"
+              accessibilityLabel="Abrir configurações"
             >
               <View style={styles.iconWrapper}>
                 <Settings size={18} color={theme.textPrimary} />
@@ -328,6 +343,9 @@ export default function Header() {
             <TouchableOpacity 
               style={styles.dropdownItem} 
               onPress={() => toggleTheme()}
+              accessibilityRole="switch"
+              accessibilityLabel={isLightMode ? 'Ativar modo escuro' : 'Ativar modo claro'}
+              accessibilityState={{ checked: !isLightMode }}
             >
               <View style={styles.iconWrapper}>
                 {isLightMode ? (
@@ -355,11 +373,15 @@ export default function Header() {
           style={styles.modalOverlay} 
           activeOpacity={1} 
           onPress={() => setIsAvatarMenuVisible(false)}
+          accessibilityRole="button"
+          accessibilityLabel={"Fechar"}
         >
           <TouchableOpacity activeOpacity={1} style={[styles.dropdownMenu, { right: 32 }]}>
             <TouchableOpacity 
               style={styles.dropdownItem} 
               onPress={handleLogout}
+              accessibilityRole="button"
+              accessibilityLabel="Sair da conta"
             >
               <View style={styles.iconWrapper}>
                 <LogOut size={18} color="#E05A10" />

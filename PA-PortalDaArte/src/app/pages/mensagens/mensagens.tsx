@@ -1,19 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
-import {
-  StyleSheet,
-  Text,
-  View,
-  TouchableOpacity,
-  SafeAreaView,
-  StatusBar,
-  ScrollView,
-  TextInput,
-  Platform,
-  Alert,
-  Image,
-  Modal,
-  Dimensions,
-} from 'react-native';
+import { StyleSheet, View, TouchableOpacity, SafeAreaView, StatusBar, ScrollView, Platform, Alert, Image, Modal, Dimensions } from 'react-native';
+import { AccessibleTextInput as TextInput } from '../../../components/accessibility/AccessibleTextInput';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useLocalSearchParams } from 'expo-router';
 import {
@@ -36,6 +23,7 @@ import Sidebar from '../../../components/Sidebar';
 import Header from '../../../components/Header';
 import { useTheme } from '../../../components/context/ThemeContext';
 
+import { VLibrasText as Text } from '../../../components/accessibility/VLibrasText';
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
 const URL_API = process.env.EXPO_PUBLIC_API_URL || 'http://127.0.0.1:8000';
 
@@ -342,9 +330,11 @@ export default function MensagensScreen() {
                       ]}
                       activeOpacity={0.8}
                       onPress={() => setSelectedId(item.id)}
+                      accessibilityRole="button"
                     >
                       <View style={[styles.avatarContainer, { backgroundColor: avatarBg }]}>
-                        {item.fotoPerfil ? <Image source={{ uri: item.fotoPerfil }} style={styles.avatarImage} /> : <IconComponent size={20} color={item.iconColor} />}
+                        {item.fotoPerfil ? <Image source={{ uri: item.fotoPerfil }} style={styles.avatarImage}
+                          accessible={false} /> : <IconComponent size={20} color={item.iconColor} />}
                       </View>
 
                       <View style={styles.conversationDetails}>
@@ -390,7 +380,8 @@ export default function MensagensScreen() {
                           },
                         ]}
                       >
-                        {selectedConversation.fotoPerfil ? <Image source={{ uri: selectedConversation.fotoPerfil }} style={styles.chatAvatarImage} /> : <SelectedIcon size={18} color={selectedConversation.iconColor} />}
+                        {selectedConversation.fotoPerfil ? <Image source={{ uri: selectedConversation.fotoPerfil }} style={styles.chatAvatarImage}
+                          accessible={false} /> : <SelectedIcon size={18} color={selectedConversation.iconColor} />}
                       </View>
                       <View>
                         <Text style={styles.chatHeaderName}>{selectedConversation.name}</Text>
@@ -401,7 +392,8 @@ export default function MensagensScreen() {
                       </View>
                     </View>
 
-                    <TouchableOpacity style={styles.btnConfirm} activeOpacity={0.85} onPress={() => Alert.alert("Contratação", "O fluxo de contratação ainda precisa ser conectado à API de propostas.")}>
+                    <TouchableOpacity style={styles.btnConfirm} activeOpacity={0.85} onPress={() => Alert.alert("Contratação", "O fluxo de contratação ainda precisa ser conectado à API de propostas.")}
+                      accessibilityRole="button">
                       <Text style={styles.btnConfirmText}>Confirmar Contratação</Text>
                     </TouchableOpacity>
                   </View>
@@ -467,6 +459,8 @@ export default function MensagensScreen() {
                                 style={styles.whatsappOptionsButton}
                                 onPress={() => setActiveMenuMessageId(isMenuOpen ? null : msg.id)}
                                 activeOpacity={0.7}
+                                accessibilityRole="button"
+                                accessibilityLabel={"Mais opções da mensagem"}
                               >
                                 <MoreHorizontal size={16} color={msg.fromMe ? '#FFFFFF' : theme.textSecondary} />
                               </TouchableOpacity>
@@ -486,6 +480,7 @@ export default function MensagensScreen() {
                                     setModalDadosMensagem(msg);
                                     setActiveMenuMessageId(null);
                                   }}
+                                  accessibilityRole="button"
                                 >
                                   <Info size={14} color={theme.textPrimary} />
                                   <Text style={styles.menuDropdownText}>Dados da mensagem</Text>
@@ -495,6 +490,7 @@ export default function MensagensScreen() {
                                   <TouchableOpacity 
                                     style={styles.menuDropdownItem}
                                     onPress={() => handleDeleteMessage(msg.id, msg.fromMe)}
+                                    accessibilityRole="button"
                                   >
                                     <Trash2 size={14} color="#E05A10" />
                                     <Text style={[styles.menuDropdownText, { color: '#E05A10' }]}>Deletar mensagem</Text>
@@ -508,6 +504,7 @@ export default function MensagensScreen() {
                                 activeOpacity={0.9} 
                                 onPress={() => setMidiaVisualizacao({ uri: msg.mediaUri!, type: msg.mediaType || 'image' })}
                                 style={styles.mediaPreviewWrapper}
+                                accessibilityRole="button"
                               >
                                 {msg.mediaType === 'video' ? (
                                   <View style={styles.videoThumbnailContainer}>
@@ -525,7 +522,8 @@ export default function MensagensScreen() {
                                     </View>
                                   </View>
                                 ) : (
-                                  <Image source={{ uri: msg.mediaUri }} style={styles.chatImageMessage} />
+                                  <Image source={{ uri: msg.mediaUri }} style={styles.chatImageMessage}
+                                    accessible={false} />
                                 )}
                               </TouchableOpacity>
                             )}
@@ -554,11 +552,14 @@ export default function MensagensScreen() {
                         {midiaAnexada.type === 'video' ? (
                           <View style={styles.miniVideoBox}><Play size={16} color="#FFF" /></View>
                         ) : (
-                          <Image source={{ uri: midiaAnexada.uri }} style={styles.miniImagePreview} />
+                          <Image source={{ uri: midiaAnexada.uri }} style={styles.miniImagePreview}
+                            accessible={false} />
                         )}
                         <Text style={styles.anexoAvisoTexto} numberOfLines={1}>Mídia pronta para envio</Text>
                       </View>
-                      <TouchableOpacity onPress={() => setMidiaAnexada(null)}>
+                      <TouchableOpacity onPress={() => setMidiaAnexada(null)}
+                        accessibilityRole="button"
+                        accessibilityLabel={"Remover mídia anexada"}>
                         <X size={18} color="#E05A10" />
                       </TouchableOpacity>
                     </View>
@@ -576,12 +577,32 @@ export default function MensagensScreen() {
                       maxLength={LIMITE_CARACTERES}
                       textAlignVertical="top"
                       onKeyPress={handleKeyPress}
+                      accessibilityLabel={String(midiaAnexada && (
+                    <View style={styles.anexoAviso}>
+                      <View style={styles.previewAnexoContainer}>
+                        {midiaAnexada.type === 'video' ? (
+                          <View style={styles.miniVideoBox}><Play size={16} color="#FFF" /></View>
+                        ) : (
+                          <Image source={{ uri: midiaAnexada.uri }} style={styles.miniImagePreview}
+                            accessible={false} />
+                        )}
+                        <Text style={styles.anexoAvisoTexto} numberOfLines={1}>Mídia pronta para envio</Text>
+                      </View>
+                      <TouchableOpacity onPress={() => setMidiaAnexada(null)}
+                        accessibilityRole="button"
+                        accessibilityLabel={"Remover mídia anexada"}>
+                        <X size={18} color="#E05A10" />
+                      </TouchableOpacity>
+                    </View>
+                  ))}
                     />
 
                     <TouchableOpacity 
                       style={styles.cameraButton} 
                       activeOpacity={0.8}
                       onPress={handleSelecionarMidia}
+                      accessibilityRole="button"
+                      accessibilityLabel={"Anexar imagem ou vídeo"}
                     >
                       <Camera size={18} color={theme.textSecondary} />
                     </TouchableOpacity>
@@ -590,6 +611,8 @@ export default function MensagensScreen() {
                       style={styles.sendButton} 
                       activeOpacity={0.85}
                       onPress={handleSendMessage}
+                      accessibilityRole="button"
+                      accessibilityLabel={"Enviar mensagem"}
                     >
                       <Send size={16} color="#f6f6f7" />
                     </TouchableOpacity>
@@ -612,6 +635,8 @@ export default function MensagensScreen() {
           <TouchableOpacity 
             style={styles.modalCloseButton} 
             onPress={() => setMidiaVisualizacao(null)}
+            accessibilityRole="button"
+            accessibilityLabel={"Fechar"}
           >
             <X size={28} color="#FFF" />
           </TouchableOpacity>
@@ -630,7 +655,8 @@ export default function MensagensScreen() {
               <Image 
                 source={{ uri: midiaVisualizacao.uri }} 
                 style={styles.modalImageFull} 
-                resizeMode="contain" 
+                resizeMode="contain"
+                accessibilityLabel={"Imagem da mensagem em tela cheia"} 
               />
             )
           )}
@@ -643,7 +669,9 @@ export default function MensagensScreen() {
           <View style={styles.dadosModalContent}>
             <View style={styles.dadosModalHeader}>
               <Text style={styles.dadosModalTitle}>Dados da Mensagem</Text>
-              <TouchableOpacity onPress={() => setModalDadosMensagem(null)}>
+              <TouchableOpacity onPress={() => setModalDadosMensagem(null)}
+                accessibilityRole="button"
+                accessibilityLabel={"Fechar"}>
                 <X size={20} color={theme.textPrimary} />
               </TouchableOpacity>
             </View>

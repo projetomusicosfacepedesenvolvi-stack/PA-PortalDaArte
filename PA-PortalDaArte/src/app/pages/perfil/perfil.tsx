@@ -1,22 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 
-import {
-  ActivityIndicator,
-  Alert,
-  DeviceEventEmitter,
-  Image,
-  Linking,
-  Modal,
-  Platform,
-  SafeAreaView,
-  ScrollView,
-  StatusBar,
-  StyleSheet,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  View,
-} from "react-native";
+import { ActivityIndicator, Alert, DeviceEventEmitter, Image, Linking, Modal, Platform, SafeAreaView, ScrollView, StatusBar, StyleSheet, TouchableOpacity, View } from 'react-native';
+import { AccessibleTextInput as TextInput } from '../../../components/accessibility/AccessibleTextInput';
 
 import {
   ArrowDown,
@@ -63,6 +48,7 @@ import {
 import type { PortfolioApiItem, PortfolioFile } from "../../../services/portfolio";
 
 import { PROFILE_CATEGORIES } from "../../../constants/artist-categories";
+import { VLibrasText as Text } from '../../../components/accessibility/VLibrasText';
 const URL_API = process.env.EXPO_PUBLIC_API_URL || "http://127.0.0.1:8000";
 
 type PortfolioItem = {
@@ -1058,6 +1044,7 @@ export default function IndexScreen() {
                           isEditingProfile && styles.profileAvatarEditingMode,
                         ]}
                         activeOpacity={0.8}
+                        accessibilityRole="button"
                       >
                         {(isEditingProfile ? editedProfileImage : profileImage) ? (
                           <Image
@@ -1067,6 +1054,7 @@ export default function IndexScreen() {
                                 : profileImage!,
                             }}
                             style={styles.avatarImage}
+                            accessible={false}
                           />
                         ) : (
                           <Text style={styles.profileAvatarText}>
@@ -1104,6 +1092,7 @@ export default function IndexScreen() {
                                 style={styles.profileNameInputStyled}
                                 placeholder="Seu nome"
                                 placeholderTextColor={theme.textSecondary}
+                                accessibilityLabel={String(isArtista ? "Nome do Artista" : "Nome Completo")}
                               />
                             </View>
 
@@ -1117,6 +1106,7 @@ export default function IndexScreen() {
                                   placeholder="Como deseja aparecer no perfil público"
                                   placeholderTextColor={theme.textSecondary}
                                   maxLength={80}
+                                  accessibilityLabel={"Nome artístico"}
                                 />
                                 <Text style={{ color: theme.textSecondary, fontSize: 12, marginTop: 4 }}>Até 80 caracteres</Text>
                               </View>
@@ -1129,6 +1119,7 @@ export default function IndexScreen() {
                                 setIsCityModalVisible(true);
                               }}
                               activeOpacity={0.8}
+                              accessibilityRole="button"
                             >
                               <Text style={styles.editFieldLabel}>Localidade</Text>
                               <View style={styles.selectBoxRow}>
@@ -1153,6 +1144,7 @@ export default function IndexScreen() {
                                 style={styles.editInputBox}
                                 onPress={() => setIsCategoryModalVisible(true)}
                                 activeOpacity={0.8}
+                                accessibilityRole="button"
                               >
                                 <Text style={styles.editFieldLabel}>
                                   Categoria de Atuação
@@ -1188,6 +1180,7 @@ export default function IndexScreen() {
                         style={styles.editButton}
                         activeOpacity={0.8}
                         onPress={handleStartEditingProfile}
+                        accessibilityRole="button"
                       >
                         <Text style={styles.editIcon}>✎</Text>
                         <Text style={styles.editButtonText}>Editar perfil</Text>
@@ -1245,7 +1238,8 @@ export default function IndexScreen() {
                             </View>
                             <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 12 }}>
                               {artistServices.map((service: any, index: number) => (
-                                <TouchableOpacity key={String(service.id || index)} activeOpacity={0.78} onPress={() => { setSelectedService(service); setIsServiceModalVisible(true); }} style={{ flexGrow: 1, flexBasis: 260, maxWidth: 520, minWidth: 0, padding: 15, borderRadius: 10, borderWidth: 1, borderColor: theme.borderColor, backgroundColor: theme.mainBg }}>
+                                <TouchableOpacity key={String(service.id || index)} activeOpacity={0.78} onPress={() => { setSelectedService(service); setIsServiceModalVisible(true); }} style={{ flexGrow: 1, flexBasis: 260, maxWidth: 520, minWidth: 0, padding: 15, borderRadius: 10, borderWidth: 1, borderColor: theme.borderColor, backgroundColor: theme.mainBg }}
+                                  accessibilityRole="button">
                                   <View style={{ flexDirection: "row", alignItems: "flex-start" }}>
                                     <View style={{ width: 30, height: 30, borderRadius: 8, backgroundColor: theme.cardBg, borderWidth: 1, borderColor: theme.borderColor, alignItems: "center", justifyContent: "center", marginRight: 10 }}>
                                       <Text style={{ color: theme.accent, fontSize: 15, fontWeight: "800" }}>✦</Text>
@@ -1270,6 +1264,7 @@ export default function IndexScreen() {
                                 key={link.id}
                                 style={styles.socialButton}
                                 onPress={() => openLink(link.url)}
+                                accessibilityRole="button"
                               >
                                 <LinkIcon
                                   size={12}
@@ -1297,6 +1292,7 @@ export default function IndexScreen() {
                             placeholderTextColor={theme.textSecondary}
                             style={styles.bioInputStyled}
                             maxLength={500}
+                            accessibilityLabel={"Biografia / Descrição"}
                           />
                           <View style={styles.bioFooter}>
                             <Text style={styles.characterCount}>
@@ -1311,7 +1307,8 @@ export default function IndexScreen() {
                             <Text style={{ color: theme.textSecondary, fontSize: 11, marginBottom: 9 }}>Informe se você atende presencialmente, remotamente ou das duas formas.</Text>
                             <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 8 }}>
                               {[{ label: "Presencial", value: "presencial" }, { label: "Remoto", value: "remoto" }, { label: "Ambos", value: "ambos" }].map((option) => (
-                                <TouchableOpacity key={option.value} onPress={() => setArtistModeInput(option.value)} style={{ borderWidth: 1, borderColor: artistModeInput === option.value ? theme.accent : theme.borderColor, backgroundColor: artistModeInput === option.value ? theme.accent + "22" : "transparent", borderRadius: 10, paddingHorizontal: 14, paddingVertical: 10 }}>
+                                <TouchableOpacity key={option.value} onPress={() => setArtistModeInput(option.value)} style={{ borderWidth: 1, borderColor: artistModeInput === option.value ? theme.accent : theme.borderColor, backgroundColor: artistModeInput === option.value ? theme.accent + "22" : "transparent", borderRadius: 10, paddingHorizontal: 14, paddingVertical: 10 }}
+                                  accessibilityRole="button">
                                   <Text style={{ color: theme.textPrimary, fontWeight: artistModeInput === option.value ? "700" : "500" }}>{option.label}</Text>
                                 </TouchableOpacity>
                               ))}
@@ -1324,14 +1321,17 @@ export default function IndexScreen() {
                             <Text style={styles.editFieldLabel}>Categorias e estilos</Text>
                             <Text style={{ color: theme.textSecondary, fontSize: 11, marginBottom: 8 }}>Adicione gêneros, estilos musicais ou categorias que descrevam sua atuação.</Text>
                             <View style={{ flexDirection: "row", gap: 8, alignItems: "center" }}>
-                              <TextInput value={newArtistCategory} onChangeText={setNewArtistCategory} placeholder="Ex.: MPB, Forró, Rock" placeholderTextColor={theme.textSecondary} style={[styles.formInput, { flex: 1 }]} onSubmitEditing={() => { const value = newArtistCategory.trim(); if (value && !editedArtistCategories.some((item) => item.toLowerCase() === value.toLowerCase())) setEditedArtistCategories((current) => [...current, value]); setNewArtistCategory(""); }} />
-                              <TouchableOpacity onPress={() => { const value = newArtistCategory.trim(); if (value && !editedArtistCategories.some((item) => item.toLowerCase() === value.toLowerCase())) setEditedArtistCategories((current) => [...current, value]); setNewArtistCategory(""); }} style={{ backgroundColor: theme.accent, borderRadius: 9, padding: 12 }}><Plus size={16} color="#FFFFFF" /></TouchableOpacity>
+                              <TextInput value={newArtistCategory} onChangeText={setNewArtistCategory} placeholder="Ex.: MPB, Forró, Rock" placeholderTextColor={theme.textSecondary} style={[styles.formInput, { flex: 1 }]} onSubmitEditing={() => { const value = newArtistCategory.trim(); if (value && !editedArtistCategories.some((item) => item.toLowerCase() === value.toLowerCase())) setEditedArtistCategories((current) => [...current, value]); setNewArtistCategory(""); }}
+                                accessibilityLabel={"Adicione gêneros, estilos musicais ou categorias que descrevam sua atuação."} />
+                              <TouchableOpacity onPress={() => { const value = newArtistCategory.trim(); if (value && !editedArtistCategories.some((item) => item.toLowerCase() === value.toLowerCase())) setEditedArtistCategories((current) => [...current, value]); setNewArtistCategory(""); }} style={{ backgroundColor: theme.accent, borderRadius: 9, padding: 12 }}
+                                accessibilityRole="button"><Plus size={16} color="#FFFFFF" /></TouchableOpacity>
                             </View>
                             <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 7, marginTop: 9 }}>
                               {editedArtistCategories.map((category, index) => (
                                 <View key={`${category}-${index}`} style={{ flexDirection: "row", alignItems: "center", gap: 5, borderWidth: 1, borderColor: theme.accent, backgroundColor: theme.mainBg, borderRadius: 16, paddingLeft: 10, paddingRight: 6, paddingVertical: 5 }}>
                                   <Text style={{ color: theme.textPrimary, fontSize: 12 }}>{category}</Text>
-                                  <TouchableOpacity onPress={() => setEditedArtistCategories((current) => current.filter((_, i) => i !== index))}><X size={13} color={theme.textSecondary} /></TouchableOpacity>
+                                  <TouchableOpacity onPress={() => setEditedArtistCategories((current) => current.filter((_, i) => i !== index))}
+                                    accessibilityRole="button"><X size={13} color={theme.textSecondary} /></TouchableOpacity>
                                 </View>
                               ))}
                             </View>
@@ -1341,25 +1341,52 @@ export default function IndexScreen() {
                             {editedArtistServices.map((service: any, index: number) => (
                               <View key={String(service.id || `novo-${index}`)} style={{ borderWidth: 1, borderColor: theme.borderColor, borderRadius: 10, padding: 10, marginBottom: 9 }}>
                                 <View style={{ flexDirection: "row", alignItems: "center", gap: 8 }}>
-                                  <TextInput value={service.titulo || ""} onChangeText={(value) => setEditedArtistServices((current) => current.map((item, i) => i === index ? { ...item, titulo: value } : item))} placeholder="Nome do serviço" placeholderTextColor={theme.textSecondary} maxLength={60} style={[styles.formInput, { flex: 1, minWidth: 0, marginBottom: 8 }]} />
-                                  <TouchableOpacity onPress={() => setEditedArtistServices((current) => current.filter((_, i) => i !== index))} style={{ padding: 7, marginBottom: 8 }}><Trash2 size={16} color="#E05A10" /></TouchableOpacity>
+                                  <TextInput value={service.titulo || ""} onChangeText={(value) => setEditedArtistServices((current) => current.map((item, i) => i === index ? { ...item, titulo: value } : item))} placeholder="Nome do serviço" placeholderTextColor={theme.textSecondary} maxLength={60} style={[styles.formInput, { flex: 1, minWidth: 0, marginBottom: 8 }]}
+                                    accessibilityLabel={"Nome do serviço"} />
+                                  <TouchableOpacity onPress={() => setEditedArtistServices((current) => current.filter((_, i) => i !== index))} style={{ padding: 7, marginBottom: 8 }}
+                                    accessibilityRole="button"><Trash2 size={16} color="#E05A10" /></TouchableOpacity>
                                 </View>
-                                <TextInput value={service.descricao || ""} onChangeText={(value) => setEditedArtistServices((current) => current.map((item, i) => i === index ? { ...item, descricao: value } : item))} placeholder="Descrição (opcional)" placeholderTextColor={theme.textSecondary} multiline maxLength={500} style={[styles.formInput, { minHeight: 64, textAlignVertical: "top" }]} />
+                                <TextInput value={service.descricao || ""} onChangeText={(value) => setEditedArtistServices((current) => current.map((item, i) => i === index ? { ...item, descricao: value } : item))} placeholder="Descrição (opcional)" placeholderTextColor={theme.textSecondary} multiline maxLength={500} style={[styles.formInput, { minHeight: 64, textAlignVertical: "top" }]}
+                                  accessibilityLabel={"Descrição (opcional)"} />
                                 <View style={{ flexDirection: "row", gap: 8, marginTop: 8 }}>
-                                  <View style={{ flex: 1 }}><Text style={{ color: theme.textSecondary, fontSize: 11, marginBottom: 5 }}>Valor mínimo (R$)</Text><TextInput value={service.preco_min == null ? "" : String(service.preco_min)} onChangeText={(value) => setEditedArtistServices((current) => current.map((item, i) => i === index ? { ...item, preco_min: value } : item))} placeholder="Ex.: 150" keyboardType="decimal-pad" placeholderTextColor={theme.textSecondary} style={styles.formInput} /></View>
-                                  <View style={{ flex: 1 }}><Text style={{ color: theme.textSecondary, fontSize: 11, marginBottom: 5 }}>Valor máximo (R$)</Text><TextInput value={service.preco_max == null ? "" : String(service.preco_max)} onChangeText={(value) => setEditedArtistServices((current) => current.map((item, i) => i === index ? { ...item, preco_max: value } : item))} placeholder="Ex.: 500" keyboardType="decimal-pad" placeholderTextColor={theme.textSecondary} style={styles.formInput} /></View>
+                                  <View style={{ flex: 1 }}><Text style={{ color: theme.textSecondary, fontSize: 11, marginBottom: 5 }}>Valor mínimo (R$)</Text><TextInput value={service.preco_min == null ? "" : String(service.preco_min)} onChangeText={(value) => setEditedArtistServices((current) => current.map((item, i) => i === index ? { ...item, preco_min: value } : item))} placeholder="Ex.: 150" keyboardType="decimal-pad" placeholderTextColor={theme.textSecondary} style={styles.formInput}
+                                    accessibilityLabel={"Valor mínimo (R$)"} /></View>
+                                  <View style={{ flex: 1 }}><Text style={{ color: theme.textSecondary, fontSize: 11, marginBottom: 5 }}>Valor máximo (R$)</Text><TextInput value={service.preco_max == null ? "" : String(service.preco_max)} onChangeText={(value) => setEditedArtistServices((current) => current.map((item, i) => i === index ? { ...item, preco_max: value } : item))} placeholder="Ex.: 500" keyboardType="decimal-pad" placeholderTextColor={theme.textSecondary} style={styles.formInput}
+                                    accessibilityLabel={"Valor máximo (R$)"} /></View>
                                 </View>
                               </View>
                             ))}
-                            <TextInput value={newServiceTitle} onChangeText={setNewServiceTitle} placeholder="Novo serviço (ex.: Show ao vivo)" placeholderTextColor={theme.textSecondary} maxLength={60} style={[styles.formInput, { marginBottom: 4 }]} />
+                            <TextInput value={newServiceTitle} onChangeText={setNewServiceTitle} placeholder="Novo serviço (ex.: Show ao vivo)" placeholderTextColor={theme.textSecondary} maxLength={60} style={[styles.formInput, { marginBottom: 4 }]}
+                              accessibilityLabel={String(editedArtistServices.map((service: any, index: number) => (
+                              <View key={String(service.id || `novo-${index}`)} style={{ borderWidth: 1, borderColor: theme.borderColor, borderRadius: 10, padding: 10, marginBottom: 9 }}>
+                                <View style={{ flexDirection: "row", alignItems: "center", gap: 8 }}>
+                                  <TextInput value={service.titulo || ""} onChangeText={(value) => setEditedArtistServices((current) => current.map((item, i) => i === index ? { ...item, titulo: value } : item))} placeholder="Nome do serviço" placeholderTextColor={theme.textSecondary} maxLength={60} style={[styles.formInput, { flex: 1, minWidth: 0, marginBottom: 8 }]}
+                                    accessibilityLabel={"Nome do serviço"} />
+                                  <TouchableOpacity onPress={() => setEditedArtistServices((current) => current.filter((_, i) => i !== index))} style={{ padding: 7, marginBottom: 8 }}
+                                    accessibilityRole="button"><Trash2 size={16} color="#E05A10" /></TouchableOpacity>
+                                </View>
+                                <TextInput value={service.descricao || ""} onChangeText={(value) => setEditedArtistServices((current) => current.map((item, i) => i === index ? { ...item, descricao: value } : item))} placeholder="Descrição (opcional)" placeholderTextColor={theme.textSecondary} multiline maxLength={500} style={[styles.formInput, { minHeight: 64, textAlignVertical: "top" }]}
+                                  accessibilityLabel={"Descrição (opcional)"} />
+                                <View style={{ flexDirection: "row", gap: 8, marginTop: 8 }}>
+                                  <View style={{ flex: 1 }}><Text style={{ color: theme.textSecondary, fontSize: 11, marginBottom: 5 }}>Valor mínimo (R$)</Text><TextInput value={service.preco_min == null ? "" : String(service.preco_min)} onChangeText={(value) => setEditedArtistServices((current) => current.map((item, i) => i === index ? { ...item, preco_min: value } : item))} placeholder="Ex.: 150" keyboardType="decimal-pad" placeholderTextColor={theme.textSecondary} style={styles.formInput}
+                                    accessibilityLabel={"Valor mínimo (R$)"} /></View>
+                                  <View style={{ flex: 1 }}><Text style={{ color: theme.textSecondary, fontSize: 11, marginBottom: 5 }}>Valor máximo (R$)</Text><TextInput value={service.preco_max == null ? "" : String(service.preco_max)} onChangeText={(value) => setEditedArtistServices((current) => current.map((item, i) => i === index ? { ...item, preco_max: value } : item))} placeholder="Ex.: 500" keyboardType="decimal-pad" placeholderTextColor={theme.textSecondary} style={styles.formInput}
+                                    accessibilityLabel={"Valor máximo (R$)"} /></View>
+                                </View>
+                              </View>
+                            )))} />
                             <Text style={{ color: theme.textSecondary, fontSize: 10, textAlign: "right", marginBottom: 8 }}>{newServiceTitle.length}/60 caracteres</Text>
-                            <TextInput value={newServiceDescription} onChangeText={setNewServiceDescription} placeholder="Descrição do serviço (opcional)" placeholderTextColor={theme.textSecondary} multiline maxLength={500} style={[styles.formInput, { minHeight: 64, textAlignVertical: "top", marginBottom: 4 }]} />
+                            <TextInput value={newServiceDescription} onChangeText={setNewServiceDescription} placeholder="Descrição do serviço (opcional)" placeholderTextColor={theme.textSecondary} multiline maxLength={500} style={[styles.formInput, { minHeight: 64, textAlignVertical: "top", marginBottom: 4 }]}
+                              accessibilityLabel={"/60 caracteres"} />
                             <Text style={{ color: theme.textSecondary, fontSize: 10, textAlign: "right", marginBottom: 8 }}>{newServiceDescription.length}/500 caracteres</Text>
                             <View style={{ flexDirection: "row", gap: 8, marginBottom: 8 }}>
-                              <View style={{ flex: 1 }}><Text style={{ color: theme.textSecondary, fontSize: 11, marginBottom: 5 }}>Valor mínimo (R$)</Text><TextInput value={newServicePriceMin} onChangeText={setNewServicePriceMin} placeholder="Ex.: 150" keyboardType="decimal-pad" placeholderTextColor={theme.textSecondary} style={styles.formInput} /></View>
-                              <View style={{ flex: 1 }}><Text style={{ color: theme.textSecondary, fontSize: 11, marginBottom: 5 }}>Valor máximo (R$)</Text><TextInput value={newServicePriceMax} onChangeText={setNewServicePriceMax} placeholder="Ex.: 500" keyboardType="decimal-pad" placeholderTextColor={theme.textSecondary} style={styles.formInput} /></View>
+                              <View style={{ flex: 1 }}><Text style={{ color: theme.textSecondary, fontSize: 11, marginBottom: 5 }}>Valor mínimo (R$)</Text><TextInput value={newServicePriceMin} onChangeText={setNewServicePriceMin} placeholder="Ex.: 150" keyboardType="decimal-pad" placeholderTextColor={theme.textSecondary} style={styles.formInput}
+                                accessibilityLabel={"Valor mínimo (R$)"} /></View>
+                              <View style={{ flex: 1 }}><Text style={{ color: theme.textSecondary, fontSize: 11, marginBottom: 5 }}>Valor máximo (R$)</Text><TextInput value={newServicePriceMax} onChangeText={setNewServicePriceMax} placeholder="Ex.: 500" keyboardType="decimal-pad" placeholderTextColor={theme.textSecondary} style={styles.formInput}
+                                accessibilityLabel={"Valor máximo (R$)"} /></View>
                             </View>
-                            <TouchableOpacity onPress={() => { const title = newServiceTitle.trim(); if (!title) { Alert.alert("Serviço", "Informe o nome do serviço."); return; } const min = newServicePriceMin.trim() ? Number(newServicePriceMin.replace(",", ".")) : null; const max = newServicePriceMax.trim() ? Number(newServicePriceMax.replace(",", ".")) : null; if ((min != null && (!Number.isFinite(min) || min < 0)) || (max != null && (!Number.isFinite(max) || max < 0)) || (min != null && max != null && max < min)) { Alert.alert("Valores inválidos", "Confira os valores mínimo e máximo do serviço."); return; } setEditedArtistServices((current) => [...current, { titulo: title, descricao: newServiceDescription.trim(), preco_min: min, preco_max: max, modalidade: "ambos" }]); setNewServiceTitle(""); setNewServiceDescription(""); setNewServicePriceMin(""); setNewServicePriceMax(""); }} style={{ flexDirection: "row", alignItems: "center", justifyContent: "center", gap: 6, borderWidth: 1, borderColor: theme.accent, borderRadius: 9, padding: 10 }}><Plus size={15} color={theme.accent} /><Text style={{ color: theme.accent, fontWeight: "700", fontSize: 12 }}>Adicionar serviço</Text></TouchableOpacity>
+                            <TouchableOpacity onPress={() => { const title = newServiceTitle.trim(); if (!title) { Alert.alert("Serviço", "Informe o nome do serviço."); return; } const min = newServicePriceMin.trim() ? Number(newServicePriceMin.replace(",", ".")) : null; const max = newServicePriceMax.trim() ? Number(newServicePriceMax.replace(",", ".")) : null; if ((min != null && (!Number.isFinite(min) || min < 0)) || (max != null && (!Number.isFinite(max) || max < 0)) || (min != null && max != null && max < min)) { Alert.alert("Valores inválidos", "Confira os valores mínimo e máximo do serviço."); return; } setEditedArtistServices((current) => [...current, { titulo: title, descricao: newServiceDescription.trim(), preco_min: min, preco_max: max, modalidade: "ambos" }]); setNewServiceTitle(""); setNewServiceDescription(""); setNewServicePriceMin(""); setNewServicePriceMax(""); }} style={{ flexDirection: "row", alignItems: "center", justifyContent: "center", gap: 6, borderWidth: 1, borderColor: theme.accent, borderRadius: 9, padding: 10 }}
+                              accessibilityRole="button"><Plus size={15} color={theme.accent} /><Text style={{ color: theme.accent, fontWeight: "700", fontSize: 12 }}>Adicionar serviço</Text></TouchableOpacity>
                           </View>
                         )}
 
@@ -1374,6 +1401,7 @@ export default function IndexScreen() {
                               setIsLinkModalVisible(true);
                             }}
                             activeOpacity={0.8}
+                            accessibilityRole="button"
                           >
                             <Plus size={14} color="#FFFFFF" />
                             <Text style={styles.addCustomLinkText}>
@@ -1406,6 +1434,7 @@ export default function IndexScreen() {
                                     handleRemoveEditedCustomLink(item.id)
                                   }
                                   style={styles.removeCustomBtn}
+                                  accessibilityRole="button"
                                 >
                                   <Trash2 size={16} color="#E05A10" />
                                 </TouchableOpacity>
@@ -1423,6 +1452,7 @@ export default function IndexScreen() {
                         style={styles.cancelProfileButton}
                         onPress={handleCancelEditingProfile}
                         activeOpacity={0.8}
+                        accessibilityRole="button"
                       >
                         <Text style={styles.cancelBioText}>Cancelar</Text>
                       </TouchableOpacity>
@@ -1430,6 +1460,7 @@ export default function IndexScreen() {
                         style={styles.saveBioButton}
                         onPress={handleSaveProfile}
                         activeOpacity={0.8}
+                        accessibilityRole="button"
                       >
                         <Check size={15} color="#FFFFFF" />
                         <Text style={styles.saveBioText}>Salvar</Text>
@@ -1478,9 +1509,11 @@ export default function IndexScreen() {
                           <View style={{ width: "100%" }}>
                             <Text style={[styles.statLabel, { fontSize: 12, fontWeight: "700", marginBottom: 10 }]}>Meu valor · Editar preços (R$)</Text>
                             <Text style={styles.editFieldLabel}>Preço inicial</Text>
-                            <TextInput value={editedArtistPriceMin} onChangeText={setEditedArtistPriceMin} keyboardType="decimal-pad" placeholder="Ex.: 300,00" placeholderTextColor={theme.textSecondary} style={[styles.formInput, { marginBottom: 10 }]} />
+                            <TextInput value={editedArtistPriceMin} onChangeText={setEditedArtistPriceMin} keyboardType="decimal-pad" placeholder="Ex.: 300,00" placeholderTextColor={theme.textSecondary} style={[styles.formInput, { marginBottom: 10 }]}
+                              accessibilityLabel={"Preço inicial"} />
                             <Text style={styles.editFieldLabel}>Preço máximo (opcional)</Text>
-                            <TextInput value={editedArtistPriceMax} onChangeText={setEditedArtistPriceMax} keyboardType="decimal-pad" placeholder="Ex.: 900,00" placeholderTextColor={theme.textSecondary} style={styles.formInput} />
+                            <TextInput value={editedArtistPriceMax} onChangeText={setEditedArtistPriceMax} keyboardType="decimal-pad" placeholder="Ex.: 900,00" placeholderTextColor={theme.textSecondary} style={styles.formInput}
+                              accessibilityLabel={"Preço máximo (opcional)"} />
                             <Text style={{ color: theme.textSecondary, fontSize: 10, marginTop: 6 }}>Deixe os campos vazios para remover a faixa de preço.</Text>
                           </View>
                         )}
@@ -1513,6 +1546,7 @@ export default function IndexScreen() {
                             style={styles.addPortfolioButton}
                             activeOpacity={0.8}
                             onPress={openPortfolioModal}
+                            accessibilityRole="button"
                           >
                             <Text style={styles.addIcon}>+</Text>
                             <Text style={styles.addPortfolioText}>Adicionar</Text>
@@ -1521,6 +1555,7 @@ export default function IndexScreen() {
                             style={styles.addVideoButton}
                             activeOpacity={0.8}
                             onPress={openVideoModal}
+                            accessibilityRole="button"
                           >
                             <Text style={styles.addVideoIcon}>+</Text>
                             <Text style={styles.addVideoText}>Adicionar vídeo</Text>
@@ -1574,11 +1609,13 @@ export default function IndexScreen() {
                                         isVideo ? "video" : "image",
                                       )
                                     }
+                                    accessibilityRole="button"
                                   >
                                     {isImage ? (
                                       <Image
                                         source={{ uri: item.file?.uri }}
                                         style={styles.fullCoverImage}
+                                        accessible={false}
                                       />
                                     ) : (
                                       <View
@@ -1634,6 +1671,7 @@ export default function IndexScreen() {
                                     item.isFeatured && styles.cardActionBtnActive,
                                   ]}
                                   onPress={() => handleToggleFeaturePortfolio(item.id)}
+                                  accessibilityRole="button"
                                 >
                                   <Star
                                     size={14}
@@ -1648,6 +1686,7 @@ export default function IndexScreen() {
                                   <TouchableOpacity
                                     style={styles.cardActionBtn}
                                     onPress={() => handleMovePortfolioItem(index, "up")}
+                                    accessibilityRole="button"
                                   >
                                     <ArrowUp size={14} color={theme.textSecondary} />
                                   </TouchableOpacity>
@@ -1657,6 +1696,7 @@ export default function IndexScreen() {
                                   <TouchableOpacity
                                     style={styles.cardActionBtn}
                                     onPress={() => handleMovePortfolioItem(index, "down")}
+                                    accessibilityRole="button"
                                   >
                                     <ArrowDown size={14} color={theme.textSecondary} />
                                   </TouchableOpacity>
@@ -1667,6 +1707,7 @@ export default function IndexScreen() {
                                   onPress={() => handleDeletePortfolioItem(item.id)}
                                   disabled={deletingPortfolioIds.includes(item.id)}
                                   accessibilityLabel={`Excluir ${item.name}`}
+                                  accessibilityRole="button"
                                 >
                                   <Trash2 size={14} color="#E05A10" />
                                 </TouchableOpacity>
@@ -1709,6 +1750,7 @@ export default function IndexScreen() {
                                     video.isFeatured && styles.cardActionBtnActive,
                                   ]}
                                   onPress={() => handleToggleFeatureVideo(video.id)}
+                                  accessibilityRole="button"
                                 >
                                   <Star
                                     size={13}
@@ -1723,6 +1765,7 @@ export default function IndexScreen() {
                                   <TouchableOpacity
                                     style={styles.cardActionBtn}
                                     onPress={() => handleMoveVideoItem(index, "up")}
+                                    accessibilityRole="button"
                                   >
                                     <ArrowUp size={13} color={theme.textSecondary} />
                                   </TouchableOpacity>
@@ -1732,6 +1775,7 @@ export default function IndexScreen() {
                                   <TouchableOpacity
                                     style={styles.cardActionBtn}
                                     onPress={() => handleMoveVideoItem(index, "down")}
+                                    accessibilityRole="button"
                                   >
                                     <ArrowDown size={13} color={theme.textSecondary} />
                                   </TouchableOpacity>
@@ -1745,6 +1789,7 @@ export default function IndexScreen() {
                                   onPress={() => handleDeleteVideoItem(video.id)}
                                   disabled={deletingPortfolioIds.includes(video.id)}
                                   accessibilityLabel={`Excluir vídeo ${video.title}`}
+                                  accessibilityRole="button"
                                 >
                                   <Trash2 size={13} color="#E05A10" />
                                 </TouchableOpacity>
@@ -1758,11 +1803,13 @@ export default function IndexScreen() {
                                   if (video.file?.uri)
                                     openViewer(video.file.uri, "video");
                                 }}
+                                accessibilityRole="button"
                               >
                                 {video.cover?.uri ? (
                                   <Image
                                     source={{ uri: video.cover.uri }}
                                     style={styles.fullCoverImage}
+                                    accessible={false}
                                   />
                                 ) : (
                                   <View style={styles.videoIconCircle}>
@@ -1805,6 +1852,7 @@ export default function IndexScreen() {
                           setIsBecomingArtistModalVisible(true);
                         }}
                         activeOpacity={0.8}
+                        accessibilityRole="button"
                       >
                         <Text style={styles.becomeArtistButtonText}>Quero ser um Artista</Text>
                       </TouchableOpacity>
@@ -1826,7 +1874,9 @@ export default function IndexScreen() {
                 <Text style={styles.modalTitle} numberOfLines={2}>{selectedService?.titulo || "Detalhes do serviço"}</Text>
                 <Text style={styles.modalSubtitle}>Informações do serviço</Text>
               </View>
-              <TouchableOpacity style={styles.modalCloseButton} onPress={() => setIsServiceModalVisible(false)}>
+              <TouchableOpacity style={styles.modalCloseButton} onPress={() => setIsServiceModalVisible(false)}
+                accessibilityRole="button"
+                accessibilityLabel={"Fechar"}>
                 <X size={19} color={theme.textSecondary} />
               </TouchableOpacity>
             </View>
@@ -1841,8 +1891,10 @@ export default function IndexScreen() {
               </View>
             </ScrollView>
             <View style={{ flexDirection: "row", justifyContent: "flex-end", paddingHorizontal: 18, paddingVertical: 14, borderTopWidth: 1, borderTopColor: theme.borderColor, gap: 10 }}>
-              <TouchableOpacity onPress={() => setIsServiceModalVisible(false)} style={{ paddingHorizontal: 15, paddingVertical: 11, borderRadius: 8, borderWidth: 1, borderColor: theme.borderColor }}><Text style={{ color: theme.textPrimary, fontWeight: "600", fontSize: 12 }}>Fechar</Text></TouchableOpacity>
-              <TouchableOpacity onPress={() => { setIsServiceModalVisible(false); setIsEditingProfile(true); setEditedArtistServices(artistServices.map((item: any) => ({ ...item }))); }} style={{ flexDirection: "row", alignItems: "center", gap: 7, paddingHorizontal: 16, paddingVertical: 11, borderRadius: 8, backgroundColor: theme.accent }}><Pencil size={14} color="#FFFFFF" /><Text style={{ color: "#FFFFFF", fontWeight: "700", fontSize: 12 }}>Editar serviços</Text></TouchableOpacity>
+              <TouchableOpacity onPress={() => setIsServiceModalVisible(false)} style={{ paddingHorizontal: 15, paddingVertical: 11, borderRadius: 8, borderWidth: 1, borderColor: theme.borderColor }}
+                accessibilityRole="button"><Text style={{ color: theme.textPrimary, fontWeight: "600", fontSize: 12 }}>Fechar</Text></TouchableOpacity>
+              <TouchableOpacity onPress={() => { setIsServiceModalVisible(false); setIsEditingProfile(true); setEditedArtistServices(artistServices.map((item: any) => ({ ...item }))); }} style={{ flexDirection: "row", alignItems: "center", gap: 7, paddingHorizontal: 16, paddingVertical: 11, borderRadius: 8, backgroundColor: theme.accent }}
+                accessibilityRole="button"><Pencil size={14} color="#FFFFFF" /><Text style={{ color: "#FFFFFF", fontWeight: "700", fontSize: 12 }}>Editar serviços</Text></TouchableOpacity>
             </View>
           </View>
         </View>
@@ -1867,6 +1919,8 @@ export default function IndexScreen() {
               <TouchableOpacity
                 style={styles.modalCloseButton}
                 onPress={() => setIsBecomingArtistModalVisible(false)}
+                accessibilityRole="button"
+                accessibilityLabel={"Fechar"}
               >
                 <X size={19} color={theme.textSecondary} />
               </TouchableOpacity>
@@ -1882,6 +1936,7 @@ export default function IndexScreen() {
                   placeholderTextColor={theme.textSecondary}
                   style={styles.formInput}
                   autoFocus
+                  accessibilityLabel={"Nome do Artista / Banda"}
                 />
               </View>
 
@@ -1895,23 +1950,28 @@ export default function IndexScreen() {
                   style={[styles.formInput, { minHeight: 82, textAlignVertical: "top", paddingTop: 12 }]}
                   multiline
                   maxLength={1000}
+                  accessibilityLabel={"Sobre você / sua banda"}
                 />
               </View>
               <View style={styles.formGroup}>
                 <Text style={styles.inputLabel}>Anos de experiência</Text>
-                <TextInput value={artistYearsInput} onChangeText={setArtistYearsInput} keyboardType="number-pad" placeholder="Ex.: 5" placeholderTextColor={theme.textSecondary} style={styles.formInput} />
+                <TextInput value={artistYearsInput} onChangeText={setArtistYearsInput} keyboardType="number-pad" placeholder="Ex.: 5" placeholderTextColor={theme.textSecondary} style={styles.formInput}
+                  accessibilityLabel={"Anos de experiência"} />
               </View>
               <View style={styles.formGroup}>
                 <Text style={styles.inputLabel}>Preço inicial (R$)</Text>
-                <TextInput value={artistPriceMinInput} onChangeText={setArtistPriceMinInput} keyboardType="decimal-pad" placeholder="Ex.: 500,00" placeholderTextColor={theme.textSecondary} style={styles.formInput} />
+                <TextInput value={artistPriceMinInput} onChangeText={setArtistPriceMinInput} keyboardType="decimal-pad" placeholder="Ex.: 500,00" placeholderTextColor={theme.textSecondary} style={styles.formInput}
+                  accessibilityLabel={"Preço inicial (R$)"} />
                 <Text style={[styles.inputLabel, { marginTop: 8 }]}>Preço máximo (opcional)</Text>
-                <TextInput value={artistPriceMaxInput} onChangeText={setArtistPriceMaxInput} keyboardType="decimal-pad" placeholder="Ex.: 1500,00" placeholderTextColor={theme.textSecondary} style={styles.formInput} />
+                <TextInput value={artistPriceMaxInput} onChangeText={setArtistPriceMaxInput} keyboardType="decimal-pad" placeholder="Ex.: 1500,00" placeholderTextColor={theme.textSecondary} style={styles.formInput}
+                  accessibilityLabel={"Preço máximo (opcional)"} />
               </View>
               <View style={styles.formGroup}>
                 <Text style={styles.inputLabel}>Modalidade de atendimento</Text>
                 <View style={{ flexDirection: "row", gap: 8, flexWrap: "wrap" }}>
                   {[{label:"Presencial", value:"presencial"}, {label:"Remoto", value:"remoto"}, {label:"Ambos", value:"ambos"}].map((option) => (
-                    <TouchableOpacity key={option.value} onPress={() => setArtistModeInput(option.value)} style={{ borderWidth: 1, borderColor: artistModeInput === option.value ? theme.accent : theme.borderColor, backgroundColor: artistModeInput === option.value ? theme.accent + "22" : "transparent", borderRadius: 10, paddingHorizontal: 12, paddingVertical: 10 }}>
+                    <TouchableOpacity key={option.value} onPress={() => setArtistModeInput(option.value)} style={{ borderWidth: 1, borderColor: artistModeInput === option.value ? theme.accent : theme.borderColor, backgroundColor: artistModeInput === option.value ? theme.accent + "22" : "transparent", borderRadius: 10, paddingHorizontal: 12, paddingVertical: 10 }}
+                      accessibilityRole="button">
                       <Text style={{ color: theme.textPrimary, fontWeight: artistModeInput === option.value ? "700" : "500" }}>{option.label}</Text>
                     </TouchableOpacity>
                   ))}
@@ -1923,6 +1983,7 @@ export default function IndexScreen() {
                   style={[styles.formInput, { justifyContent: "center" }]}
                   onPress={() => setIsArtistCategoryModalVisible(true)}
                   activeOpacity={0.8}
+                  accessibilityRole="button"
                 >
                   <View style={styles.selectBoxRow}>
                     <Music size={14} color={theme.accent} style={{ marginRight: 6 }} />
@@ -1940,6 +2001,7 @@ export default function IndexScreen() {
                 style={styles.modalCancelButton}
                 onPress={() => setIsBecomingArtistModalVisible(false)}
                 disabled={isSubmittingArtist}
+                accessibilityRole="button"
               >
                 <Text style={styles.modalCancelText}>Cancelar</Text>
               </TouchableOpacity>
@@ -1947,6 +2009,7 @@ export default function IndexScreen() {
                 style={[styles.modalAddButton, isSubmittingArtist && styles.modalAddButtonDisabled]}
                 onPress={handleConfirmBecomeArtist}
                 disabled={isSubmittingArtist}
+                accessibilityRole="button"
               >
                 {isSubmittingArtist ? (
                   <ActivityIndicator size="small" color="#FFFFFF" />
@@ -1978,6 +2041,8 @@ export default function IndexScreen() {
               <TouchableOpacity
                 style={styles.modalCloseButton}
                 onPress={() => setIsArtistCategoryModalVisible(false)}
+                accessibilityRole="button"
+                accessibilityLabel={"Fechar"}
               >
                 <X size={19} color={theme.textSecondary} />
               </TouchableOpacity>
@@ -2001,6 +2066,7 @@ export default function IndexScreen() {
                       setSelectedArtistCategory(cat);
                       setIsArtistCategoryModalVisible(false);
                     }}
+                    accessibilityRole="button"
                   >
                     <Text
                       style={[
@@ -2022,6 +2088,7 @@ export default function IndexScreen() {
               <TouchableOpacity
                 style={styles.modalCancelButton}
                 onPress={() => setIsArtistCategoryModalVisible(false)}
+                accessibilityRole="button"
               >
                 <Text style={styles.modalCancelText}>Fechar</Text>
               </TouchableOpacity>
@@ -2049,6 +2116,8 @@ export default function IndexScreen() {
               <TouchableOpacity
                 style={styles.modalCloseButton}
                 onPress={() => setIsCategoryModalVisible(false)}
+                accessibilityRole="button"
+                accessibilityLabel={"Fechar"}
               >
                 <X size={19} color={theme.textSecondary} />
               </TouchableOpacity>
@@ -2075,6 +2144,7 @@ export default function IndexScreen() {
                       setEditedProfileCategory(cat);
                       setIsCategoryModalVisible(false);
                     }}
+                    accessibilityRole="button"
                   >
                     <Text
                       style={[
@@ -2096,6 +2166,7 @@ export default function IndexScreen() {
               <TouchableOpacity
                 style={styles.modalCancelButton}
                 onPress={() => setIsCategoryModalVisible(false)}
+                accessibilityRole="button"
               >
                 <Text style={styles.modalCancelText}>Fechar</Text>
               </TouchableOpacity>
@@ -2122,6 +2193,8 @@ export default function IndexScreen() {
               <TouchableOpacity
                 style={styles.modalCloseButton}
                 onPress={() => setIsCityModalVisible(false)}
+                accessibilityRole="button"
+                accessibilityLabel={"Fechar"}
               >
                 <X size={19} color={theme.textSecondary} />
               </TouchableOpacity>
@@ -2136,6 +2209,7 @@ export default function IndexScreen() {
                   placeholderTextColor={theme.textSecondary}
                   style={styles.formInput}
                   autoFocus
+                  accessibilityLabel={"Buscar Cidade ou Interior Digite qualquer município do Brasil (Ex: Caruaru)"}
                 />
               </View>
 
@@ -2170,6 +2244,7 @@ export default function IndexScreen() {
                           setEditedLocation(cityName);
                           setIsCityModalVisible(false);
                         }}
+                        accessibilityRole="button"
                       >
                         <Text style={styles.cityItemText}>{cityName}</Text>
                       </TouchableOpacity>
@@ -2183,6 +2258,7 @@ export default function IndexScreen() {
               <TouchableOpacity
                 style={styles.modalCancelButton}
                 onPress={() => setIsCityModalVisible(false)}
+                accessibilityRole="button"
               >
                 <Text style={styles.modalCancelText}>Cancelar</Text>
               </TouchableOpacity>
@@ -2209,6 +2285,8 @@ export default function IndexScreen() {
               <TouchableOpacity
                 style={styles.modalCloseButton}
                 onPress={() => setIsLinkModalVisible(false)}
+                accessibilityRole="button"
+                accessibilityLabel={"Fechar"}
               >
                 <X size={19} color={theme.textSecondary} />
               </TouchableOpacity>
@@ -2223,6 +2301,7 @@ export default function IndexScreen() {
                   placeholder="Ex.: Instagram, Spotify"
                   placeholderTextColor={theme.textSecondary}
                   style={styles.formInput}
+                  accessibilityLabel={"Nome do Link"}
                 />
               </View>
 
@@ -2240,6 +2319,7 @@ export default function IndexScreen() {
                     urlError ? { borderColor: "#E05A10" } : null,
                   ]}
                   autoCapitalize="none"
+                  accessibilityLabel={"URL / Link (Obrigatório https://)"}
                 />
                 {urlError ? (
                   <Text style={styles.errorText}>{urlError}</Text>
@@ -2251,6 +2331,7 @@ export default function IndexScreen() {
               <TouchableOpacity
                 style={styles.modalCancelButton}
                 onPress={() => setIsLinkModalVisible(false)}
+                accessibilityRole="button"
               >
                 <Text style={styles.modalCancelText}>Cancelar</Text>
               </TouchableOpacity>
@@ -2264,6 +2345,7 @@ export default function IndexScreen() {
                 disabled={
                   !newLinkName.trim() || !newLinkUrl.trim() || !!urlError
                 }
+                accessibilityRole="button"
               >
                 <Text style={styles.modalAddText}>Adicionar</Text>
               </TouchableOpacity>
@@ -2283,6 +2365,8 @@ export default function IndexScreen() {
             style={styles.viewerCloseButton}
             onPress={closeViewer}
             activeOpacity={0.7}
+            accessibilityRole="button"
+            accessibilityLabel={"Fechar"}
           >
             <X size={26} color="#FFFFFF" />
           </TouchableOpacity>
@@ -2298,6 +2382,7 @@ export default function IndexScreen() {
             <Image
               source={{ uri: viewerMediaUri }}
               style={styles.viewerImage}
+              accessibilityLabel={"Imagem do portfólio em tela cheia"}
             />
           ) : null}
         </View>
@@ -2322,6 +2407,8 @@ export default function IndexScreen() {
                 style={styles.modalCloseButton}
                 onPress={closePortfolioModal}
                 disabled={isSavingPortfolio}
+                accessibilityRole="button"
+                accessibilityLabel={"Fechar"}
               >
                 <X size={19} color={theme.textSecondary} />
               </TouchableOpacity>
@@ -2337,6 +2424,7 @@ export default function IndexScreen() {
                   placeholder="Ex.: Apresentação acústica"
                   placeholderTextColor={theme.textSecondary}
                   style={styles.formInput}
+                  accessibilityLabel={"Nome"}
                 />
               </View>
               <View style={styles.formGroup}>
@@ -2351,6 +2439,7 @@ export default function IndexScreen() {
                   textAlignVertical="top"
                   style={[styles.formInput, styles.descriptionInput]}
                   maxLength={300}
+                  accessibilityLabel={"Descrição"}
                 />
                 <Text style={styles.descriptionCounter}>
                   {portfolioDescription.length}/300
@@ -2367,6 +2456,7 @@ export default function IndexScreen() {
                   ]}
                   onPress={handlePickFile}
                   disabled={isSavingPortfolio}
+                  accessibilityRole="button"
                 >
                   <View style={styles.uploadIconContainer}>
                     <Upload size={18} color={theme.accent} />
@@ -2391,6 +2481,7 @@ export default function IndexScreen() {
                 style={styles.modalCancelButton}
                 onPress={closePortfolioModal}
                 disabled={isSavingPortfolio}
+                accessibilityRole="button"
               >
                 <Text style={styles.modalCancelText}>Cancelar</Text>
               </TouchableOpacity>
@@ -2402,6 +2493,7 @@ export default function IndexScreen() {
                 ]}
                 onPress={handleAddPortfolio}
                 disabled={isSavingPortfolio || !portfolioName.trim() || !portfolioDescription.trim()}
+                accessibilityRole="button"
               >
                 <Text style={styles.modalAddText}>{isSavingPortfolio ? "Enviando..." : "Adicionar"}</Text>
               </TouchableOpacity>
@@ -2429,6 +2521,8 @@ export default function IndexScreen() {
                 style={styles.modalCloseButton}
                 onPress={closeVideoModal}
                 disabled={isSavingVideo}
+                accessibilityRole="button"
+                accessibilityLabel={"Fechar"}
               >
                 <X size={19} color={theme.textSecondary} />
               </TouchableOpacity>
@@ -2447,6 +2541,7 @@ export default function IndexScreen() {
                   placeholder="Ex.: Apresentação acústica"
                   placeholderTextColor={theme.textSecondary}
                   style={styles.formInput}
+                  accessibilityLabel={"Nome"}
                 />
               </View>
               <View style={styles.formGroup}>
@@ -2459,6 +2554,7 @@ export default function IndexScreen() {
                   placeholder="Ex.: Violão e voz"
                   placeholderTextColor={theme.textSecondary}
                   style={styles.formInput}
+                  accessibilityLabel={"Descrição"}
                 />
               </View>
               <View style={styles.formGroup}>
@@ -2470,6 +2566,7 @@ export default function IndexScreen() {
                   ]}
                   onPress={handlePickVideoCover}
                   disabled={isSavingVideo}
+                  accessibilityRole="button"
                 >
                   <View style={styles.uploadIconContainer}>
                     <ImageIcon size={18} color={theme.accent} />
@@ -2495,6 +2592,7 @@ export default function IndexScreen() {
                   ]}
                   onPress={handlePickVideo}
                   disabled={isSavingVideo}
+                  accessibilityRole="button"
                 >
                   <View style={styles.uploadIconContainer}>
                     <Upload size={18} color={theme.accent} />
@@ -2517,6 +2615,7 @@ export default function IndexScreen() {
                 style={styles.modalCancelButton}
                 onPress={closeVideoModal}
                 disabled={isSavingVideo}
+                accessibilityRole="button"
               >
                 <Text style={styles.modalCancelText}>Cancelar</Text>
               </TouchableOpacity>
@@ -2530,6 +2629,7 @@ export default function IndexScreen() {
                 disabled={
                   isSavingVideo || !videoTitle.trim() || !videoSubtitle.trim() || !videoFile
                 }
+                accessibilityRole="button"
               >
                 <Text style={styles.modalAddText}>{isSavingVideo ? "Enviando..." : "Adicionar"}</Text>
               </TouchableOpacity>
