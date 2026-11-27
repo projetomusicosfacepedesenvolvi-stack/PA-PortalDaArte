@@ -18,6 +18,7 @@ export const REGISTER_ROUTE = "/pages/cadastro/cadastro";
 export const DISCOVER_ROUTE = "/pages/explorar/explorar";
 export const ARTIST_PROFILE_ROUTE = "/pages/perfil_publico/perfil_publico";
 export const FAVORITES_ROUTE = "/pages/favoritos/favoritos";
+export const PROFILE_ROUTE = "/pages/perfil/perfil";
 export const SETTINGS_ROUTE = "/pages/configuracoes/configuracoes";
 export const CART_ROUTE = "/pages/carrinho/carrinho";
 

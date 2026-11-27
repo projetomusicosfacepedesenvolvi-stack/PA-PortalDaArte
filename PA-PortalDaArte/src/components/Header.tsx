@@ -4,12 +4,14 @@ import {
   Image,
   Modal,
   Platform,
+  ScrollView,
   StyleSheet,
   TouchableOpacity,
   useWindowDimensions,
   View,
 } from 'react-native';
 import {
+  Accessibility,
   Bell,
   LogIn,
   LogOut,
@@ -19,23 +21,26 @@ import {
   Settings,
   ShoppingBag,
   Sun,
+  User,
   X,
 } from 'lucide-react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { router, usePathname } from 'expo-router';
 
+import AccessibilitySettingsPanel from './accessibility/AccessibilitySettingsPanel';
 import { AccessibleTextInput as TextInput } from './accessibility/AccessibleTextInput';
 import { VLibrasText as Text } from './accessibility/VLibrasText';
 import { useAuth } from './context/AuthContext';
 import { useSearch } from './context/SearchContext';
 import { useTheme } from './context/ThemeContext';
 import { useCart } from './context/CartContext';
-import { buildLoginHref, CART_ROUTE, DISCOVER_ROUTE, normalizePath, SETTINGS_ROUTE } from '../constants/auth-routes';
+import { buildLoginHref, CART_ROUTE, DISCOVER_ROUTE, normalizePath, PROFILE_ROUTE, SETTINGS_ROUTE } from '../constants/auth-routes';
 import { PRIMARY_NAV_ITEMS, SETTINGS_NAV_ITEM } from '../constants/navigation';
 import BrandMark from './BrandMark';
 
 export default function Header() {
-  const [isMenuVisible, setIsMenuVisible] = useState(false);
+  const [isAccessibilityVisible, setIsAccessibilityVisible] = useState(false);
+  const [isSettingsVisible, setIsSettingsVisible] = useState(false);
   const [isAvatarMenuVisible, setIsAvatarMenuVisible] = useState(false);
   const [isNotificationsVisible, setIsNotificationsVisible] = useState(false);
   const [isNavigationVisible, setIsNavigationVisible] = useState(false);
@@ -61,7 +66,8 @@ export default function Header() {
 
   useEffect(() => {
     setIsNavigationVisible(false);
-    setIsMenuVisible(false);
+    setIsAccessibilityVisible(false);
+    setIsSettingsVisible(false);
     setIsAvatarMenuVisible(false);
     setIsNotificationsVisible(false);
   }, [pathname]);
@@ -238,6 +244,25 @@ export default function Header() {
             ) : null}
           </TouchableOpacity>
 
+          <TouchableOpacity
+            style={[styles.themeSwitch, !isLightMode && styles.themeSwitchOn]}
+            onPress={toggleTheme}
+            activeOpacity={0.8}
+            accessibilityRole="switch"
+            accessibilityLabel={isLightMode ? 'Modo escuro desligado. Ativar modo escuro' : 'Modo escuro ligado. Desativar modo escuro'}
+            accessibilityHint="Alterna entre o modo claro e o modo escuro"
+            accessibilityState={{ checked: !isLightMode }}
+            testID="header-theme-switch"
+          >
+            <View style={[styles.themeSwitchThumb, !isLightMode && styles.themeSwitchThumbOn]}>
+              {isLightMode ? (
+                <Moon size={14} color={theme.textPrimary} accessible={false} />
+              ) : (
+                <Sun size={14} color={theme.accentHover || theme.accent} accessible={false} />
+              )}
+            </View>
+          </TouchableOpacity>
+
           {isAuthenticated ? (
             <TouchableOpacity
               style={styles.iconButton}
@@ -255,15 +280,31 @@ export default function Header() {
 
           <TouchableOpacity
             style={styles.iconButton}
-            onPress={() => setIsMenuVisible(true)}
+            onPress={() => setIsAccessibilityVisible(true)}
             activeOpacity={0.8}
             accessibilityRole="button"
-            accessibilityLabel="Configurações"
-            accessibilityHint="Abre o menu de configurações"
-            accessibilityState={{ expanded: isMenuVisible }}
+            accessibilityLabel="Acessibilidade"
+            accessibilityHint="Abre os ajustes de acessibilidade"
+            accessibilityState={{ expanded: isAccessibilityVisible }}
+            testID="header-accessibility-button"
           >
-            <Settings size={20} color={theme.textSecondary} accessible={false} />
+            <Accessibility size={20} color={theme.textSecondary} accessible={false} />
           </TouchableOpacity>
+
+          {isAuthenticated ? (
+            <TouchableOpacity
+              style={styles.iconButton}
+              onPress={() => setIsSettingsVisible(true)}
+              activeOpacity={0.8}
+              accessibilityRole="button"
+              accessibilityLabel="Configurações"
+              accessibilityHint="Abre as configurações da conta"
+              accessibilityState={{ expanded: isSettingsVisible }}
+              testID="header-settings-button"
+            >
+              <Settings size={20} color={theme.textSecondary} accessible={false} />
+            </TouchableOpacity>
+          ) : null}
 
           {isGuest ? (
             <TouchableOpacity
@@ -356,9 +397,9 @@ export default function Header() {
               accessibilityRole="link"
             >
               <View style={styles.drawerItemIcon} accessible={false}>
-                <Settings size={19} color={theme.sidebarMuted || theme.textSecondary} accessible={false} />
+                <Accessibility size={19} color={theme.sidebarMuted || theme.textSecondary} accessible={false} />
               </View>
-              <Text style={styles.drawerItemText}>Configurações</Text>
+              <Text style={styles.drawerItemText}>{SETTINGS_NAV_ITEM.label}</Text>
             </TouchableOpacity>
           </TouchableOpacity>
         </TouchableOpacity>
@@ -410,17 +451,56 @@ export default function Header() {
         </TouchableOpacity>
       </Modal>
 
-      <Modal visible={isMenuVisible} transparent animationType="fade" onRequestClose={() => setIsMenuVisible(false)}>
-        <TouchableOpacity style={styles.modalOverlay} activeOpacity={1} onPress={() => setIsMenuVisible(false)} accessibilityRole="button" accessibilityLabel="Fechar configurações">
-          <TouchableOpacity activeOpacity={1} style={styles.dropdownMenu} onPress={() => undefined} accessible={false} accessibilityRole="none">
+      <Modal visible={isAccessibilityVisible} transparent animationType="fade" onRequestClose={() => setIsAccessibilityVisible(false)}>
+        <TouchableOpacity style={styles.modalOverlay} activeOpacity={1} onPress={() => setIsAccessibilityVisible(false)} accessibilityRole="button" accessibilityLabel="Fechar acessibilidade">
+          <TouchableOpacity activeOpacity={1} style={[styles.dropdownMenu, styles.accessibilityMenu]} onPress={() => undefined} accessible={false} accessibilityRole="none">
+            <View style={styles.accessibilityHeader}>
+              <View style={styles.iconWrapper} accessible={false}>
+                <Accessibility size={18} color={theme.accent} accessible={false} />
+              </View>
+              <View style={{ flex: 1 }}>
+                <Text style={styles.dropdownTitle}>Acessibilidade</Text>
+                <Text style={styles.dropdownCaption}>Ajustes de leitura e contraste</Text>
+              </View>
+              <TouchableOpacity
+                style={styles.iconButtonSmall}
+                onPress={() => setIsAccessibilityVisible(false)}
+                accessibilityRole="button"
+                accessibilityLabel="Fechar acessibilidade"
+              >
+                <X size={16} color={theme.textSecondary} accessible={false} />
+              </TouchableOpacity>
+            </View>
+            <ScrollView style={styles.accessibilityScroll} contentContainerStyle={styles.accessibilityScrollContent} showsVerticalScrollIndicator={false}>
+              <AccessibilitySettingsPanel compact />
+              <TouchableOpacity
+                style={styles.openFullScreenButton}
+                onPress={() => {
+                  setIsAccessibilityVisible(false);
+                  router.push(SETTINGS_ROUTE as any);
+                }}
+                activeOpacity={0.85}
+                accessibilityRole="link"
+                accessibilityLabel="Abrir a tela completa de acessibilidade"
+              >
+                <Text style={styles.openFullScreenText}>Abrir tela completa</Text>
+              </TouchableOpacity>
+            </ScrollView>
+          </TouchableOpacity>
+        </TouchableOpacity>
+      </Modal>
+
+      <Modal visible={isSettingsVisible} transparent animationType="fade" onRequestClose={() => setIsSettingsVisible(false)}>
+        <TouchableOpacity style={styles.modalOverlay} activeOpacity={1} onPress={() => setIsSettingsVisible(false)} accessibilityRole="button" accessibilityLabel="Fechar configurações">
+          <TouchableOpacity activeOpacity={1} style={[styles.dropdownMenu, styles.settingsMenu]} onPress={() => undefined} accessible={false} accessibilityRole="none">
             <TouchableOpacity
               style={styles.dropdownItem}
               onPress={() => {
-                setIsMenuVisible(false);
+                setIsSettingsVisible(false);
                 router.push(SETTINGS_ROUTE as any);
               }}
-              accessibilityRole="button"
-              accessibilityLabel="Abrir configurações"
+              accessibilityRole="link"
+              accessibilityLabel="Abrir configurações de acessibilidade e preferências"
             >
               <View style={styles.iconWrapper} accessible={false}>
                 <Settings size={18} color={theme.textPrimary} accessible={false} />
@@ -433,17 +513,19 @@ export default function Header() {
             <View style={styles.divider} />
             <TouchableOpacity
               style={styles.dropdownItem}
-              onPress={() => toggleTheme()}
-              accessibilityRole="switch"
-              accessibilityLabel={isLightMode ? 'Ativar modo escuro' : 'Ativar modo claro'}
-              accessibilityState={{ checked: !isLightMode }}
+              onPress={() => {
+                setIsSettingsVisible(false);
+                router.push(PROFILE_ROUTE as any);
+              }}
+              accessibilityRole="link"
+              accessibilityLabel="Editar perfil, serviços e portfólio"
             >
               <View style={styles.iconWrapper} accessible={false}>
-                {isLightMode ? <Moon size={18} color={theme.textPrimary} accessible={false} /> : <Sun size={18} color={theme.textPrimary} accessible={false} />}
+                <User size={18} color={theme.textPrimary} accessible={false} />
               </View>
               <View style={{ flex: 1 }}>
-                <Text style={styles.dropdownText}>{isLightMode ? 'Modo escuro' : 'Modo claro'}</Text>
-                <Text style={styles.dropdownCaption}>Alternar aparência do sistema</Text>
+                <Text style={styles.dropdownText}>Perfil</Text>
+                <Text style={styles.dropdownCaption}>Dados, serviços e portfólio</Text>
               </View>
             </TouchableOpacity>
           </TouchableOpacity>
@@ -517,6 +599,29 @@ const getStyles = (theme: any, compact: boolean) => StyleSheet.create({
     borderWidth: 1,
     borderColor: theme.borderColor,
   },
+  themeSwitch: {
+    width: 54,
+    height: 34,
+    borderRadius: 17,
+    paddingHorizontal: 3,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'flex-start',
+    backgroundColor: theme.surfaceMuted || theme.cardBg,
+    borderWidth: 1,
+    borderColor: theme.borderColor,
+  },
+  themeSwitchOn: { backgroundColor: theme.accent, borderColor: theme.accent },
+  themeSwitchThumb: {
+    width: 26,
+    height: 26,
+    borderRadius: 13,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: theme.cardBg,
+    transform: [{ translateX: 0 }],
+  },
+  themeSwitchThumbOn: { transform: [{ translateX: 22 }] },
   notificationDot: {
     position: 'absolute', top: 7, right: 7, width: 8, height: 8, borderRadius: 4,
     backgroundColor: theme.accent, borderWidth: 1.5, borderColor: theme.headerBg,
@@ -563,6 +668,47 @@ const getStyles = (theme: any, compact: boolean) => StyleSheet.create({
     }),
   },
   notificationsMenu: { width: compact ? undefined : 340, maxWidth: compact ? undefined : 360, right: compact ? 14 : 118 },
+  accessibilityMenu: {
+    width: compact ? undefined : 380,
+    maxWidth: compact ? undefined : 400,
+    maxHeight: 560,
+    right: compact ? 14 : 72,
+    paddingVertical: 0,
+  },
+  settingsMenu: {
+    width: compact ? undefined : 260,
+    maxWidth: compact ? undefined : 280,
+    right: compact ? 14 : 26,
+  },
+  accessibilityHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 11,
+    paddingHorizontal: 14,
+    paddingVertical: 13,
+    borderBottomWidth: 1,
+    borderBottomColor: theme.borderColor,
+  },
+  iconButtonSmall: {
+    width: 30,
+    height: 30,
+    borderRadius: 9,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: theme.surfaceMuted || theme.mainBg,
+  },
+  accessibilityScroll: { maxHeight: 470 },
+  accessibilityScrollContent: { paddingHorizontal: 12, paddingTop: 14, paddingBottom: 14 },
+  openFullScreenButton: {
+    minHeight: 42,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: theme.accent,
+    backgroundColor: theme.accentSoft || theme.menuActiveBg,
+  },
+  openFullScreenText: { color: theme.accent, fontSize: 12, fontWeight: '800' },
   accountMenu: {
     position: 'absolute', top: compact ? 118 : 66, right: compact ? 14 : 26,
     width: compact ? 210 : 220, backgroundColor: theme.cardBg, borderRadius: 14,

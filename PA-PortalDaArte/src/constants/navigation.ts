@@ -3,8 +3,8 @@ import {
   Compass,
   Heart,
   MessageSquare,
-  ShoppingBag,
   Settings,
+  ShoppingBag,
   User,
   type LucideIcon,
 } from 'lucide-react-native';
