@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import {
   ActivityIndicator,
   Alert,
@@ -12,10 +12,11 @@ import {
   useWindowDimensions,
   View,
 } from 'react-native';
-import { ArrowLeft, CalendarDays, MapPin, Music, UserRound, Wallet } from 'lucide-react-native';
-import { useLocalSearchParams, useRouter } from 'expo-router';
+import { ArrowLeft, CalendarDays, MapPin, MessageCircle, Music, UserRound, Wallet } from 'lucide-react-native';
+import { useFocusEffect, useLocalSearchParams, useRouter } from 'expo-router';
 
 import Sidebar from '../../../components/Sidebar';
+import { DESKTOP_BREAKPOINT } from '../../../constants/responsive';
 import Header from '../../../components/Header';
 import { useTheme } from '../../../components/context/ThemeContext';
 import { VLibrasText as Text } from '../../../components/accessibility/VLibrasText';
@@ -34,7 +35,7 @@ export default function DetalhesContratacaoScreen() {
   const id = Array.isArray(params.id) ? params.id[0] : params.id;
   const { theme, isLightMode } = useTheme();
   const { width } = useWindowDimensions();
-  const compact = width < 900;
+  const compact = width < DESKTOP_BREAKPOINT;
   const narrow = width < 620;
   const styles = getStyles(theme, compact, narrow);
   const [item, setItem] = useState<PropostaApi | null>(null);
@@ -42,26 +43,29 @@ export default function DetalhesContratacaoScreen() {
   const [respondendo, setRespondendo] = useState(false);
   const [error, setError] = useState('');
 
-  const carregar = useCallback(async () => {
+  const carregar = useCallback(async (initial = false) => {
     if (!id) {
       setError('Contratação não encontrada.');
       setLoading(false);
       return;
     }
-    setLoading(true);
-    setError('');
+    if (initial) { setLoading(true); setError(''); }
     try {
       setItem(await obterProposta(id));
+      setError('');
     } catch (err: any) {
       setError(err?.message || 'Não foi possível carregar a contratação.');
     } finally {
-      setLoading(false);
+      if (initial) setLoading(false);
     }
   }, [id]);
 
-  useEffect(() => {
-    void carregar();
-  }, [carregar]);
+  useFocusEffect(useCallback(() => {
+    let active = true;
+    void carregar(true);
+    const timer = setInterval(() => { if (active) void carregar(); }, 4000);
+    return () => { active = false; clearInterval(timer); };
+  }, [carregar]));
 
   const responder = async (acao: 'aceitar' | 'recusar') => {
     if (!item || respondendo) return;
@@ -85,7 +89,7 @@ export default function DetalhesContratacaoScreen() {
   const status = item ? statusPropostaLabel(item) : '';
   const statusColor = status === 'Pendente' ? '#F2994A'
     : status === 'Confirmado' ? '#14804A'
-      : status === 'Concluido' ? '#27AE60'
+      : status === 'Concluído' ? '#27AE60'
         : status === 'Recusada' ? '#C0392B' : '#6B7280';
   const nome = item
     ? (item.papel_atual === 'contratante' ? item.artista_nome : item.contratante_nome)
@@ -103,7 +107,7 @@ export default function DetalhesContratacaoScreen() {
           <Header />
           <ScrollView style={styles.scrollView} contentContainerStyle={styles.scrollContent}>
             <View style={styles.contentWrapper}>
-              <Pressable onPress={() => router.back()} style={styles.backButton} accessibilityRole="button">
+              <Pressable onPress={() => router.push('/pages/contratacoes/contratacoes')} style={styles.backButton} accessibilityRole="button">
                 <ArrowLeft size={20} color={theme.textPrimary} accessible={false} />
                 <Text style={styles.backButtonText}>Voltar para Contratações</Text>
               </Pressable>
@@ -182,6 +186,15 @@ export default function DetalhesContratacaoScreen() {
                   {item.contrato_id ? (
                     <Text style={styles.contractText}>Contrato #{item.contrato_id} • {item.contrato_status || 'ativo'}</Text>
                   ) : null}
+                  <TouchableOpacity
+                    onPress={() => router.push({ pathname: '/pages/mensagens/mensagens',
+                      params: { conversaId: String(item.conversa_id) } })}
+                    accessibilityRole="button" accessibilityLabel="Abrir conversa desta contratação"
+                    style={styles.chatButton}>
+                    <MessageCircle size={17} color={theme.onAccent || '#FFFFFF'} accessible={false} />
+                    <Text style={styles.chatButtonText}>Abrir conversa com {item.papel_atual === 'artista' ? 'o contratante' : 'o artista'}</Text>
+                  </TouchableOpacity>
+
 
                   {item.papel_atual === 'artista' && item.status === 'em_negociacao' ? (
                     <View style={styles.actions}>
@@ -214,9 +227,9 @@ export default function DetalhesContratacaoScreen() {
 }
 
 const getStyles = (theme: any, compact: boolean, narrow: boolean) => StyleSheet.create({
-  container: { flex: 1, backgroundColor: theme.mainBg, ...Platform.select({ web: { height: '100vh' as any, overflow: 'hidden' } }) },
+  container: { flex: 1, backgroundColor: theme.mainBg, ...Platform.select({ web: compact ? { minHeight: '100dvh' as any } : { height: '100vh' as any, overflow: 'hidden' } }) },
   dashboardContainer: { flex: 1, flexDirection: 'row', backgroundColor: theme.mainBg },
-  mainContent: { flex: 1, backgroundColor: theme.mainBg, ...Platform.select({ web: { height: '100vh' as any, overflow: 'hidden' } }) },
+  mainContent: { flex: 1, backgroundColor: theme.mainBg, ...Platform.select({ web: compact ? { minHeight: '100dvh' as any } : { height: '100vh' as any, overflow: 'hidden' } }) },
   scrollView: { flex: 1 },
   scrollContent: { flexGrow: 1 },
   contentWrapper: { width: '100%', maxWidth: 980, alignSelf: 'center', paddingHorizontal: compact ? 18 : 32, paddingTop: compact ? 18 : 26, paddingBottom: 36 },
@@ -247,8 +260,12 @@ const getStyles = (theme: any, compact: boolean, narrow: boolean) => StyleSheet.
   scopeBox: { backgroundColor: theme.surfaceMuted || theme.mainBg, borderWidth: 1, borderColor: theme.borderColor, borderRadius: 18, padding: 16, marginTop: 4 },
   scopeText: { color: theme.textPrimary, fontSize: 13, lineHeight: 20, marginTop: 6 },
   contractText: { color: theme.accent, fontSize: 12, fontWeight: '700', marginTop: 16 },
+  chatButton: { alignSelf: 'flex-start', maxWidth: '100%', flexDirection: 'row', alignItems: 'center', gap: 9,
+    backgroundColor: theme.accent, paddingHorizontal: 16, paddingVertical: 12,
+    borderRadius: 12, marginTop: 14 },
+  chatButtonText: { color: theme.onAccent || '#FFFFFF', fontWeight: '800', fontSize: 12, flexShrink: 1 },
   actions: { flexDirection: narrow ? 'column-reverse' : 'row', justifyContent: 'flex-end', gap: 10, marginTop: 24 },
-  actionButton: { borderRadius: 12, minHeight: 46, paddingHorizontal: 18, paddingVertical: 12, borderWidth: 1, alignItems: 'center', justifyContent: 'center' },
+  actionButton: { width: narrow ? '100%' : undefined, borderRadius: 12, minHeight: 46, paddingHorizontal: 18, paddingVertical: 12, borderWidth: 1, alignItems: 'center', justifyContent: 'center' },
   rejectButton: { backgroundColor: theme.cardBg, borderColor: '#C0392B' },
   acceptButton: { backgroundColor: theme.accent, borderColor: theme.accent },
   rejectText: { color: '#C0392B', fontWeight: '700' },

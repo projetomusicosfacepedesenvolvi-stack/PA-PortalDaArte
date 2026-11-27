@@ -4,6 +4,7 @@ import { AccessibleTextInput as TextInput } from '../../../components/accessibil
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Header from "../../../components/Header";
 import Sidebar from "../../../components/Sidebar";
+import { DESKTOP_BREAKPOINT, MOBILE_BREAKPOINT } from "../../../constants/responsive";
 import { useTheme } from "../../../components/context/ThemeContext";
 import { useFocusEffect, useLocalSearchParams, useRouter } from "expo-router";
 import { useAuth } from "../../../components/context/AuthContext";
@@ -316,7 +317,7 @@ export default function ExplorarScreen() {
   const { theme, isLightMode } = useTheme();
   const styles = getStyles(theme) as any;
   const { width, height } = useWindowDimensions();
-  const isMobile = width < 900;
+  const isMobile = width < MOBILE_BREAKPOINT;
   const isCompactViewport = !isMobile && height <= 820;
   // Em telas realmente largas o filtro pode ocupar uma coluna lateral.
   // Em notebooks e telas menores ele abre como painel/modal para nunca espremer os cards.
@@ -325,7 +326,7 @@ export default function ExplorarScreen() {
   const router = useRouter();
   const { requireAuth, status } = useAuth();
   // Visitante vê o layout público (sem Sidebar); a Sidebar só entra com a sessão autenticada.
-  const showSidebar = !isMobile && status === "authenticated";
+  const showSidebar = width >= DESKTOP_BREAKPOINT && status === "authenticated";
   // O texto vem da barra de pesquisa do Header (contexto compartilhado). useDeferredValue mantém
   // a digitação fluida: o campo atualiza na hora e a lista acompanha logo em seguida.
   const { query, setQuery } = useSearch();
@@ -381,7 +382,7 @@ export default function ExplorarScreen() {
     - (showSidebar ? 236 : 0)
     - (showFilterSidebar ? 330 : 0)
     - (isMobile ? 28 : 48);
-  const gridColumns = estimatedContentWidth >= 1220 ? 3 : estimatedContentWidth >= 760 ? 2 : 1;
+  const gridColumns = estimatedContentWidth >= 1120 ? 3 : estimatedContentWidth >= 660 ? 2 : 1;
 
   const activeFilterCount = useMemo(() => {
     let count = 0;
@@ -1789,7 +1790,7 @@ const getStyles = (theme: any) =>
       marginBottom: 20,
       paddingTop: 10,
     },
-    filterHeaderActions: { flexDirection: "row", alignItems: "center", gap: 10 },
+    filterHeaderActions: { flexDirection: "row", alignItems: "center", flexWrap: "wrap", gap: 10 },
     hideFiltersButton: {
       minHeight: 34,
       justifyContent: "center",

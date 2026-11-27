@@ -30,6 +30,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 
 import Header from "../../../components/Header";
 import Sidebar from "../../../components/Sidebar";
+import { DESKTOP_BREAKPOINT, MOBILE_BREAKPOINT } from '../../../constants/responsive';
 import { useTheme } from "../../../components/context/ThemeContext";
 import {
   openPortfolioFile,
@@ -100,8 +101,8 @@ const FIXED_CATEGORIES = PROFILE_CATEGORIES;
 export default function IndexScreen() {
   const { theme, isLightMode } = useTheme();
   const { width } = useWindowDimensions();
-  const showSidebar = width >= 900;
-  const styles = getStyles(theme);
+  const showSidebar = width >= DESKTOP_BREAKPOINT;
+  const styles = getStyles(theme, width < MOBILE_BREAKPOINT);
 
   const [loadingBackend, setLoadingBackend] = useState(true);
   const [isArtista, setIsArtista] = useState(false);
@@ -1389,7 +1390,7 @@ export default function IndexScreen() {
                                 </View>
                                 <TextInput value={service.descricao || ""} onChangeText={(value) => setEditedArtistServices((current) => current.map((item, i) => i === index ? { ...item, descricao: value } : item))} placeholder="Descrição (opcional)" placeholderTextColor={theme.textSecondary} multiline maxLength={500} style={[styles.formInput, { minHeight: 64, textAlignVertical: "top" }]}
                                   accessibilityLabel={"Descrição (opcional)"} />
-                                <View style={{ flexDirection: "row", gap: 8, marginTop: 8 }}>
+                                <View style={{ flexDirection: width < 480 ? "column" : "row", gap: 8, marginTop: 8 }}>
                                   <View style={{ flex: 1 }}><Text style={{ color: theme.textSecondary, fontSize: 11, marginBottom: 5 }}>Valor mínimo (R$)</Text><TextInput value={service.preco_min == null ? "" : String(service.preco_min)} onChangeText={(value) => setEditedArtistServices((current) => current.map((item, i) => i === index ? { ...item, preco_min: value } : item))} placeholder="Ex.: 150" keyboardType="decimal-pad" placeholderTextColor={theme.textSecondary} style={styles.formInput}
                                     accessibilityLabel={"Valor mínimo (R$)"} /></View>
                                   <View style={{ flex: 1 }}><Text style={{ color: theme.textSecondary, fontSize: 11, marginBottom: 5 }}>Valor máximo (R$)</Text><TextInput value={service.preco_max == null ? "" : String(service.preco_max)} onChangeText={(value) => setEditedArtistServices((current) => current.map((item, i) => i === index ? { ...item, preco_max: value } : item))} placeholder="Ex.: 500" keyboardType="decimal-pad" placeholderTextColor={theme.textSecondary} style={styles.formInput}
@@ -1410,20 +1411,6 @@ export default function IndexScreen() {
                             <TextInput value={newServiceDescription} onChangeText={setNewServiceDescription} placeholder="Descrição do serviço (opcional)" placeholderTextColor={theme.textSecondary} multiline maxLength={500} style={[styles.formInput, { minHeight: 64, textAlignVertical: "top", marginBottom: 4 }]}
                               accessibilityLabel="Descrição do novo serviço" />
                             <Text style={{ color: theme.textSecondary, fontSize: 10, textAlign: "right", marginBottom: 8 }}>{newServiceDescription.length}/500 caracteres</Text>
-                            <TouchableOpacity
-                              onPress={handleGenerateServiceDescription}
-                              disabled={isGeneratingServiceDescription}
-                              style={{ flexDirection: "row", alignItems: "center", justifyContent: "center", gap: 6, borderWidth: 1, borderColor: theme.accent, borderRadius: 9, padding: 10, marginBottom: 10, opacity: isGeneratingServiceDescription ? 0.6 : 1 }}
-                              accessibilityRole="button"
-                              accessibilityLabel="Gerar descrição do serviço com inteligência artificial"
-                            >
-                              {isGeneratingServiceDescription
-                                ? <ActivityIndicator size="small" color={theme.accent} />
-                                : <Sparkles size={15} color={theme.accent} />}
-                              <Text style={{ color: theme.accent, fontWeight: "700", fontSize: 12 }}>
-                                {isGeneratingServiceDescription ? "Gerando descrição..." : "Gerar descrição com IA"}
-                              </Text>
-                            </TouchableOpacity>
                             <View style={{ flexDirection: "row", gap: 8, marginBottom: 8 }}>
                               <View style={{ flex: 1 }}><Text style={{ color: theme.textSecondary, fontSize: 11, marginBottom: 5 }}>Valor mínimo (R$)</Text><TextInput value={newServicePriceMin} onChangeText={setNewServicePriceMin} placeholder="Ex.: 150" keyboardType="decimal-pad" placeholderTextColor={theme.textSecondary} style={styles.formInput}
                                 accessibilityLabel={"Valor mínimo (R$)"} /></View>
@@ -2709,14 +2696,14 @@ function StatCard({ theme, number, label, icon }: any) {
   );
 }
 
-const getStyles = (theme: any) =>
+const getStyles = (theme: any, narrow = false) =>
   StyleSheet.create({
     container: {
       flex: 1,
       backgroundColor: theme.mainBg,
       ...Platform.select({
-        web: { height: "100vh" as any, overflow: "hidden" },
-        default: {},
+        web: narrow ? { minHeight: "100dvh" as any } : { height: "100vh" as any, overflow: "hidden" },
+        default: {} as any,
       }),
     },
     dashboardContainer: {
@@ -2724,8 +2711,8 @@ const getStyles = (theme: any) =>
       flexDirection: "row",
       backgroundColor: theme.mainBg,
       ...Platform.select({
-        web: { height: "100vh" as any, overflow: "hidden" },
-        default: {},
+        web: narrow ? { minHeight: "100dvh" as any } : { height: "100vh" as any, overflow: "hidden" },
+        default: {} as any,
       }),
     },
     mainContent: {
@@ -2733,19 +2720,16 @@ const getStyles = (theme: any) =>
       backgroundColor: theme.mainBg,
       ...Platform.select({
         web: {
-          height: "100vh" as any,
-          display: "flex",
-          flexDirection: "column",
-          overflow: "hidden",
+          ...(narrow ? { minHeight: 0 } : { height: "100vh" as any, display: "flex", flexDirection: "column", overflow: "hidden" }),
         },
-        default: {},
+        default: {} as any,
       }),
     },
     scrollView: {
       flex: 1,
       ...Platform.select({
         web: { scrollbarWidth: "none", msOverflowStyle: "none" },
-        default: {},
+        default: {} as any,
       }),
     },
     scrollContentContainer: { flexGrow: 1 },
@@ -2753,12 +2737,12 @@ const getStyles = (theme: any) =>
       width: '100%',
       maxWidth: 1180,
       alignSelf: 'center',
-      paddingHorizontal: 24,
-      paddingTop: 24,
-      paddingBottom: 40,
+      paddingHorizontal: narrow ? 14 : 24,
+      paddingTop: narrow ? 18 : 24,
+      paddingBottom: 56,
     },
     profileHeader: {
-      flexDirection: "row",
+      flexDirection: narrow ? "column" : "row",
       justifyContent: "space-between",
       alignItems: "center",
       flexWrap: "wrap",
@@ -2785,9 +2769,10 @@ const getStyles = (theme: any) =>
     profileHeaderLeft: {
       flexDirection: "row",
       alignItems: "flex-start",
-      flex: 1,
+      flex: narrow ? 0 : 1,
+      minWidth: 0,
     },
-    profileData: { flex: 1 },
+    profileData: { flex: 1, minWidth: 0 },
     profileAvatar: {
       width: 78,
       height: 78,
@@ -2820,7 +2805,7 @@ const getStyles = (theme: any) =>
       alignItems: "center",
     },
     profileAvatarText: { color: "#FFFFFF", fontSize: 27, fontWeight: "700" },
-    profileName: { color: theme.textPrimary, fontSize: 28, lineHeight: 33, fontWeight: "900", fontFamily: "serif", letterSpacing: -0.5 },
+    profileName: { color: theme.textPrimary, fontSize: narrow ? 23 : 28, lineHeight: 33, fontWeight: "900", fontFamily: "serif", letterSpacing: -0.5 },
     editFormColumn: { width: "100%", gap: 10 },
     editInputBox: {
       backgroundColor: theme.mainBg,
@@ -3057,7 +3042,7 @@ const getStyles = (theme: any) =>
       padding: 13,
       flexDirection: "row",
       alignItems: "center",
-      minWidth: 180,
+      minWidth: narrow ? 130 : 180,
     },
     statIcon: {
       width: 35,
@@ -3138,7 +3123,7 @@ const getStyles = (theme: any) =>
       borderWidth: 1,
       borderColor: theme.borderColor,
       overflow: "hidden",
-      flexDirection: "row",
+      flexDirection: narrow ? "column" : "row",
       marginBottom: 22,
       position: "relative",
     },
@@ -3192,8 +3177,8 @@ const getStyles = (theme: any) =>
     },
     cardActionDelete: { backgroundColor: theme.mainBg },
     portfolioPreview: {
-      width: 190,
-      height: 130,
+      width: narrow ? "100%" : 190,
+      height: narrow ? 178 : 130,
       backgroundColor: "#FDE4D9",
       justifyContent: "center",
       alignItems: "center",
@@ -3228,7 +3213,8 @@ const getStyles = (theme: any) =>
     },
     videoCard: {
       flex: 1,
-      minWidth: 200,
+      minWidth: narrow ? 0 : 200,
+      flexBasis: narrow ? "100%" : undefined,
       backgroundColor: theme.cardBg,
       borderRadius: 10,
       borderWidth: 1,
@@ -3294,7 +3280,7 @@ const getStyles = (theme: any) =>
       backgroundColor: "rgba(0, 0, 0, 0.55)",
       justifyContent: "center",
       alignItems: "center",
-      paddingHorizontal: 20,
+      paddingHorizontal: narrow ? 12 : 20,
     },
     modalContainer: {
       width: "100%",
@@ -3327,7 +3313,7 @@ const getStyles = (theme: any) =>
       justifyContent: "center",
       alignItems: "center",
     },
-    modalContent: { padding: 20 },
+    modalContent: { padding: narrow ? 14 : 20 },
     formGroup: { marginBottom: 16 },
     inputLabel: {
       color: theme.textPrimary,
@@ -3377,16 +3363,18 @@ const getStyles = (theme: any) =>
       alignItems: "center",
       marginRight: 10,
     },
-    uploadTextContainer: { flex: 1 },
+    uploadTextContainer: { flex: 1, minWidth: 0 },
     uploadTitle: { color: theme.textPrimary, fontSize: 11, fontWeight: "700" },
     uploadSubtitle: { color: theme.textSecondary, fontSize: 9, marginTop: 3 },
     modalFooter: {
       flexDirection: "row",
+      flexWrap: "wrap",
+      gap: 8,
       justifyContent: "flex-end",
       alignItems: "center",
       borderTopWidth: 1,
       borderTopColor: theme.borderColor,
-      paddingHorizontal: 20,
+      paddingHorizontal: narrow ? 12 : 20,
       paddingVertical: 14,
     },
     modalCancelButton: {
